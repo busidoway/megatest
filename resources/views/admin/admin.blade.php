@@ -32,15 +32,21 @@
 </head>
 
 <body>
-    @include('admin.includes.navbar')
+    <div id="app">
 
-    <main class="content">
+        @include('admin.includes.navbar')
 
-    @include('admin.includes.header')
+        <main class="content">
 
-    @yield('content')
+            @include('admin.includes.header')
 
-    </main>
+            <router-view></router-view>
+
+            @yield('content')
+
+        </main>
+
+    </div>
 
     <!-- Core -->
     <script src="/vendor/@popperjs/core/dist/umd/popper.min.js"></script>
@@ -82,6 +88,8 @@
 
     <!-- Volt JS -->
     <script src="/assets/js/volt.js"></script>
+
+    <script src="/js/app.js"></script>
 
 </body>
 </html>

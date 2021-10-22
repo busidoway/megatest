@@ -23,4 +23,8 @@ Route::get('/admin', function () {
     return view('admin.admin');
 });
 
+Route::get('/{any}', function () {
+    return view('admin.admin');
+})->where('any', '.*');
+
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
