@@ -26,6 +26,8 @@
 <!-- Notyf -->
 <link type="text/css" href="/vendor/notyf/notyf.min.css" rel="stylesheet">
 
+<link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
+
 <!-- Volt CSS -->
 <link type="text/css" href="/css/volt.css" rel="stylesheet">
 
@@ -85,6 +87,8 @@
 
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <script src="/vendor/fontawesome/js/all.min.js"></script>
 
     <!-- Volt JS -->
     <script src="/assets/js/volt.js"></script>

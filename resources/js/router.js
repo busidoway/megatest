@@ -6,19 +6,24 @@ Vue.use(vueRouter);
 import Index from "./views/AdminIndex";
 import Tests from "./views/AdminTests";
 import Setting from "./views/AdminSetting";
+import TestEdit from "./views/AdminTestEdit";
 
 const routes = [
     {
-        path: "/index",
+        path: "/admin/index",
         component: Index
     },
     {
-        path: "/tests",
+        path: "/admin/tests",
         component: Tests
     },
     {
-        path: "/setting",
+        path: "/admin/setting",
         component: Setting
+    },
+    {
+        path: "/admin/test-edit",
+        component: TestEdit
     }
 ];
 
