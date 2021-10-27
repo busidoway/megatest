@@ -35,6 +35,7 @@
                             <div class="row mb-3 mx-0">
                                 <textarea name="note" id="noteTest" rows="10" v-model="form.note" class="form-control" placeholder="Описание"></textarea>
                             </div>
+                            <TestItems></TestItems>
                             <div class="row p-0 mx-0">
                                 <div class="p-0">
                                     <button class="btn btn-success" @click.prevent="store">Сохранить</button>
@@ -51,14 +52,20 @@
 
 <script>
     import axios from 'axios';
+    import TestItems from "../components/AdminTestItems.vue";
 
     export default {
-        components: {},
+        components: {
+            TestItems
+        },
         data: () => ({
             form: {
                 name: "",
                 note: ""
             },
+            // items: [
+            //     {label:0}
+            // ],
             error: false,
             success: false
         }),
@@ -70,7 +77,6 @@
                     }
                 })
                 .then(res => {
-                    console.log('111');
                     if (res.data.status) {
                         this.success = true;
                         this.error = false;
@@ -80,6 +86,11 @@
                     }
                 })
             }
+            // addItem() {
+            //     this.items.push({
+            //         label: this.items.length + 1
+            //     })
+            // }
         }
     }
 </script>
