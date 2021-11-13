@@ -29,14 +29,12 @@
                             Успешно сохранено
                         </div>
                         <form>
-                            <!-- <input type="hidden" name="test_box_id" v-model="form.test_box_id" value="1"> -->
                             <div class="row mb-3 mx-0">
                                 <input type="text" name="name" id="nameTest" v-model="form.name" :class="{ 'is-invalid':error }" class="form-control" placeholder="Заголовок" required>
                             </div>
                             <div class="row mb-3 mx-0">
                                 <textarea name="note" id="noteTest" rows="10" v-model="form.note" class="form-control" placeholder="Описание"></textarea>
                             </div>
-                            <TestItems></TestItems>
                             <div class="row p-0 mx-0">
                                 <div class="p-0">
                                     <button class="btn btn-success" @click.prevent="store">Сохранить</button>
@@ -53,27 +51,20 @@
 
 <script>
     import axios from 'axios';
-    import TestItems from "../components/AdminTestItems.vue";
 
     export default {
-        components: {
-            TestItems
-        },
+        components: {},
         data: () => ({
             form: {
-                // test_box_id: "",
                 name: "",
                 note: ""
             },
-            // items: [
-            //     {label:0}
-            // ],
             error: false,
             success: false
         }),
         methods: {
             store() {
-                axios.post('/api/tests', this.form, {
+                axios.post('/api/test_boxes', this.form, {
                     headers: {
                         "Content-type": "application/json"
                     }
@@ -88,11 +79,6 @@
                     }
                 })
             }
-            // addItem() {
-            //     this.items.push({
-            //         label: this.items.length + 1
-            //     })
-            // }
         }
     }
 </script>

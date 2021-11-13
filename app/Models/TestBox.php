@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TestItem extends Model
+class TestBox extends Model
 {
     use HasFactory;
-    protected $fillable = ['text', 'status'];
+    protected $fillable = ['name', 'note'];
 }

@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\TestBox;
 use App\Models\Test;
-use App\Models\TestBoxTestRel;
 use Illuminate\Http\Request;
 use Validator;
 
-
-class TestsController extends Controller
+class TestBoxesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,17 +17,7 @@ class TestsController extends Controller
      */
     public function index()
     {
-
-        // $table = DB::table('test_boxes')
-        //             ->join('test_box_test_rels', 'test_boxes.id', '=', 'test_box_test_rels.test_box_id')
-        //             ->join('tests', 'tests.id', '=', 'test_box_test_rels.test_id')
-        //             -select('tests.*')
-        //             ->where('test_boxes.id', 1)
-        //             ->get();
-        
-        // return $table->all();
-
-        return Test::all();
+        return TestBox::all();
     }
 
     /**
@@ -63,21 +52,15 @@ class TestsController extends Controller
             ];
         }
 
-        $test = Test::create([
-            // "test_box_id" => $request->test_box_id,
+        $testbox = TestBox::create([
             "name" => $request->name,
             "note" => $request->note
         ]);
 
-        // TestBoxTestRel::create([
-        //     "test_box_id" => 
-        // ]);
-
         return [
             "status" => true,
-            "test" => $test
+            "testbox" => $testbox
         ];
-
     }
 
     /**
@@ -88,15 +71,31 @@ class TestsController extends Controller
      */
     public function show($id)
     {
-        $test = Test::find($id);
-        if (!$test) {
-            return response()->json([
-                "status" => false,
-                "message" => "Test not found"
-            ])->setStatusCode(404);
-        }
+        // $test = Test::find($id);
+        // if (!$test) {
+        //     return response()->json([
+        //         "status" => false,
+        //         "message" => "Test not found"
+        //     ])->setStatusCode(404);
+        // }
 
-        return $test;
+        // return $test;
+
+
+        // $table = DB::table('test_boxes')
+        //             ->join('test_box_test_rels', 'test_boxes.id', '=', 'test_box_test_rels.test_box_id')
+        //             ->join('tests', 'tests.id', '=', 'test_box_test_rels.test_id')
+        //             -select('tests.*')
+        //             ->where('test_boxes.id', $id)
+        //             ->get();
+        
+        // // $test = Test::create([
+        // //     "name" => $table->name,
+        // //     "note" => $table->note;
+        // // ]);
+
+        // return $table;
+
     }
 
     /**
@@ -130,9 +129,6 @@ class TestsController extends Controller
      */
     public function destroy($id)
     {
-        $test = Test::find($id);
-        if ($test) {
-            $test->delete();
-        }
+        //
     }
 }

@@ -15,10 +15,18 @@ class CreateTestsTable extends Migration
     {
         Schema::create('tests', function (Blueprint $table) {
             $table->id();
+            // $table->foreignId('test_box_id');
+            // $table->foreign('test_box_id')->references('id')->on('test_boxes');
             $table->string('name');
             $table->text('note')->nullable();
             $table->timestamps();
         });
+
+        // Schema::table('tests', function (Blueprint $table) {
+        //     $table->foreignId('test_box_id');
+        //     $table->foreign('test_box_id')->references('id')->on('test_boxes');
+        // });
+
     }
 
     /**

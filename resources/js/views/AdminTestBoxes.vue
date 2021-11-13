@@ -9,19 +9,16 @@
                                 <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                             </router-link>
                         </li>
-                        <li class="breadcrumb-item">
-                            <router-link :to="{path: '/admin/tests'}">Тесты</router-link>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">Вопросы</li>
+                        <li class="breadcrumb-item active" aria-current="page">Тесты</li>
                     </ol>
                 </nav>
-                <h2 class="h4">Вопросы</h2>
-                <p class="mb-0">Список вопросов.</p>
+                <h2 class="h4">Тесты</h2>
+                <p class="mb-0">Список тестов.</p>
             </div>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <router-link :to="{path: '/admin/test-edit'}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
                     <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Добавить вопрос
+                    Создать тест
                 </router-link>
             </div>
         </div>
@@ -94,7 +91,7 @@
                                         <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
                                     <div class="dropdown-menu py-0">
-                                        <a class="dropdown-item rounded-top" href="javascript:;"><span class="fas fa-eye me-2"></span>Просмотр</a>
+                                        <a class="dropdown-item rounded-top" href="javascript:;" @click="gotoTest(test.id)"><span class="fas fa-eye me-2"></span>Просмотр</a>
                                         <a class="dropdown-item" href="javascript:;"><span class="fas fa-edit me-2"></span>Редактировать</a>
                                         <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="deleteTest(test.id)"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
                                     </div>
@@ -148,15 +145,24 @@
         },
         methods: {
             loadTests() {
-                axios.get('/api/tests')
+                axios.get('/api/test_boxes')
                 .then(res => {
                     this.loading = false;
                     this.tests = res.data;
                     //setTimeout(() => { }, 500)
                 })
             },
+            gotoTest(id) {
+                axios.get('/api/tests/')
+                .then(res => {
+                    this.$route.params.id;
+                })
+                .catch(err => {
+                    //this.error_del = true;
+                })
+            },
             deleteTest(id){
-                axios.delete('/api/tests/'+id)
+                axios.delete('/api/test_boxes/'+id)
                 .then(res => {
                     this.loadTests();
                 })

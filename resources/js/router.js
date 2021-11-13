@@ -4,9 +4,10 @@ import Vue from 'vue';
 Vue.use(vueRouter);
 
 import Index from "./views/AdminIndex";
-import Tests from "./views/AdminTests";
+import TestBoxes from "./views/AdminTestBoxes";
 import Setting from "./views/AdminSetting";
-import TestEdit from "./views/AdminTestEdit";
+import TestBoxEdit from "./views/AdminTestBoxEdit";
+import Tests from "./views/AdminTests";
 
 const routes = [
     {
@@ -15,7 +16,7 @@ const routes = [
     },
     {
         path: "/admin/tests",
-        component: Tests
+        component: TestBoxes
     },
     {
         path: "/admin/setting",
@@ -23,7 +24,11 @@ const routes = [
     },
     {
         path: "/admin/test-edit",
-        component: TestEdit
+        component: TestBoxEdit
+    },
+    {
+        path: "/admin/test_boxes/:id",
+        component: Tests
     }
 ];
 
