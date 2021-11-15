@@ -15,8 +15,8 @@ class CreateTestItemsTable extends Migration
     {
         Schema::create('test_items', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('test_id');
-            // $table->foreign('test_id')->references('id')->on('tests');
+            $table->foreignId('test_id');
+            $table->foreign('test_id')->references('id')->on('tests');
             $table->text('text');
             $table->enum('status', ['y','n'])->default('n');
         });

@@ -23,8 +23,13 @@ Route::get('/admin', function () {
     return view('admin.admin');
 });
 
+// Route::get('admin/tests/{id}', 'TestsController@index');
+  
+
 Route::get('/{any}', function () {
     return view('admin.admin');
 })->where('any', '.*');
 
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/admin/tests/{id}', [App\Http\Controllers\TestsController::class, 'index']);
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

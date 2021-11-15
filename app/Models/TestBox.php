@@ -9,4 +9,9 @@ class TestBox extends Model
 {
     use HasFactory;
     protected $fillable = ['name', 'note'];
+
+    public function tests(){
+        return $this->hasMany(Test::class);
+    }
+
 }

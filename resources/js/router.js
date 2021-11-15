@@ -8,6 +8,7 @@ import TestBoxes from "./views/AdminTestBoxes";
 import Setting from "./views/AdminSetting";
 import TestBoxEdit from "./views/AdminTestBoxEdit";
 import Tests from "./views/AdminTests";
+import TestEdit from "./views/AdminTestEdit";
 
 const routes = [
     {
@@ -23,12 +24,16 @@ const routes = [
         component: Setting
     },
     {
-        path: "/admin/test-edit",
+        path: "/admin/tests/edit",
         component: TestBoxEdit
     },
     {
-        path: "/admin/test_boxes/:id",
+        path: "/admin/tests/:id",
         component: Tests
+    },
+    {
+        path: "/admin/tests/:id/question",
+        component: TestEdit
     }
 ];
 

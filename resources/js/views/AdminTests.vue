@@ -19,10 +19,10 @@
                 <p class="mb-0">Список вопросов.</p>
             </div>
             <div class="btn-toolbar mb-2 mb-md-0">
-                <router-link :to="{path: '/admin/test-edit'}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+                <button @click="goToEditQuestion()" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
                     <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Добавить вопрос
-                </router-link>
+                </button>
             </div>
         </div>
         <div class="table-settings mb-4">
@@ -67,7 +67,7 @@
                         <tr>
                             <th class="border-gray-200">#</th>
                             <th class="border-gray-200">Заголовок</th>						
-                            <th class="border-gray-200">Дата</th>
+                            <!-- <th class="border-gray-200">Дата</th> -->
                             <th class="border-gray-200">Статус</th>
                             <th class="border-gray-200"></th>
                         </tr>
@@ -83,7 +83,7 @@
                             <td>
                                 <span class="fw-normal">{{ test.name }}</span>
                             </td>
-                            <td><span class="fw-normal">{{ test.created_at }}</span></td>
+                            <!-- <td><span class="fw-normal">{{ test.created_at }}</span></td> -->
                             <td><span class="fw-bold text-success">Активный</span></td>
                             <td>
                                 <div class="btn-group">
@@ -144,16 +144,28 @@
             tests: []
         }),
         mounted() {
-            this.loadTests();
+            this.loadTests(this.$route.params.id);
+            // console.log(this.$route.params.id);
         },
         methods: {
-            loadTests() {
-                axios.get('/api/tests')
+            loadTests(id) {
+                // var id = this.$route.params.id;
+                // console.log(this.$route.params.id);
+                axios.get('/api/tests/' + id)
+                // axios.get('/admin/tests/' + id)
                 .then(res => {
+                    
+                    // console.log(res.data);
                     this.loading = false;
                     this.tests = res.data;
                     //setTimeout(() => { }, 500)
+                }).catch(err => {
+                    // this.not_found = true;
+                    console.log(err);
                 })
+            },
+            goToEditQuestion(){
+                this.$router.push('/admin/tests/'+ this.$route.params.id +'/question');
             },
             deleteTest(id){
                 axios.delete('/api/tests/'+id)

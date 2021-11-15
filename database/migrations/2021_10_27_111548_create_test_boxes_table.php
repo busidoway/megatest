@@ -15,6 +15,8 @@ class CreateTestBoxesTable extends Migration
     {
         Schema::create('test_boxes', function (Blueprint $table) {
             $table->id();
+            // $table->foreignId('test_category_id');
+            // $table->foreign('test_category_id')->references('id')->on('test_categories');
             $table->string('name');
             $table->text('note')->nullable();
             $table->timestamps();

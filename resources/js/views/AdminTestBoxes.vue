@@ -73,12 +73,12 @@
                         <!-- Item -->
                         <tr v-for="test in tests" :key="test.id">
                             <td>
-                                <a href="#" class="fw-bold">
+                                <router-link :to="{path: '/admin/tests/' + test.id}" class="fw-bold text-info">
                                     {{ test.id }}
-                                </a>
+                                </router-link>
                             </td>
                             <td>
-                                <span class="fw-normal">{{ test.name }}</span>
+                                <router-link class="fw-normal text-info" :to="{path: '/admin/tests/' + test.id}">{{ test.name }}</router-link>
                             </td>
                             <td><span class="fw-normal">{{ test.created_at }}</span></td>
                             <td><span class="fw-bold text-success">Активный</span></td>
@@ -91,7 +91,7 @@
                                         <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
                                     <div class="dropdown-menu py-0">
-                                        <a class="dropdown-item rounded-top" href="javascript:;" @click="gotoTest(test.id)"><span class="fas fa-eye me-2"></span>Просмотр</a>
+                                        <!-- <a class="dropdown-item rounded-top" href="javascript:;" @click="gotoTest(test.id)"><span class="fas fa-eye me-2"></span>Просмотр</a> -->
                                         <a class="dropdown-item" href="javascript:;"><span class="fas fa-edit me-2"></span>Редактировать</a>
                                         <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="deleteTest(test.id)"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
                                     </div>
@@ -153,13 +153,14 @@
                 })
             },
             gotoTest(id) {
-                axios.get('/api/tests/')
-                .then(res => {
-                    this.$route.params.id;
-                })
-                .catch(err => {
-                    //this.error_del = true;
-                })
+                this.$router.push('/admin/tests/'+id);
+                // axios.get('/api/tests/')
+                // .then(res => {
+                //     this.$route.params.id;
+                // })
+                // .catch(err => {
+                //     //this.error_del = true;
+                // })
             },
             deleteTest(id){
                 axios.delete('/api/test_boxes/'+id)

@@ -71,30 +71,14 @@ class TestBoxesController extends Controller
      */
     public function show($id)
     {
-        // $test = Test::find($id);
-        // if (!$test) {
-        //     return response()->json([
-        //         "status" => false,
-        //         "message" => "Test not found"
-        //     ])->setStatusCode(404);
-        // }
-
-        // return $test;
-
-
-        // $table = DB::table('test_boxes')
-        //             ->join('test_box_test_rels', 'test_boxes.id', '=', 'test_box_test_rels.test_box_id')
-        //             ->join('tests', 'tests.id', '=', 'test_box_test_rels.test_id')
-        //             -select('tests.*')
-        //             ->where('test_boxes.id', $id)
-        //             ->get();
         
-        // // $test = Test::create([
-        // //     "name" => $table->name,
-        // //     "note" => $table->note;
-        // // ]);
+        // $testbox = TestBox::find($id);
 
-        // return $table;
+        // $tests = $testbox->tests();
+
+        // return response()->json($tests);
+
+        // return $tests;
 
     }
 

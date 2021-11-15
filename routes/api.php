@@ -22,4 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::resource('test_boxes', TestBoxesController::class);
 
-Route::resource('tests', TestsController::class);
+// Route::resource('tests', TestsController::class);
+
+Route::get('tests/{id}', [TestsController::class, 'index']);
+
+Route::post('tests/{id}/question', [TestsController::class, 'store']);

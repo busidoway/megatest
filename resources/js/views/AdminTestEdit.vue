@@ -9,12 +9,12 @@
                         </a>
                     </li>
                     <li class="breadcrumb-item"><router-link :to="{path: '/admin/tests'}">Тесты</router-link></li>
-                    <li class="breadcrumb-item active" aria-current="page">Создание теста</li>
+                    <li class="breadcrumb-item active" aria-current="page">Создание вопроса</li>
                 </ol>
             </nav>
             <div class="d-flex justify-content-between w-100 flex-wrap">
                 <div class="mb-3 mb-lg-0">
-                    <h1 class="h4">Создание теста</h1>
+                    <h1 class="h4">Создание вопроса</h1>
                 </div>
             </div>
         </div>
@@ -29,12 +29,15 @@
                             Успешно сохранено
                         </div>
                         <form>
-                            <!-- <input type="hidden" name="test_box_id" v-model="form.test_box_id" value="1"> -->
+                            <input type="hidden" name="test_box_id" v-model="form.test_box_id" value="">
                             <div class="row mb-3 mx-0">
                                 <input type="text" name="name" id="nameTest" v-model="form.name" :class="{ 'is-invalid':error }" class="form-control" placeholder="Заголовок" required>
                             </div>
                             <div class="row mb-3 mx-0">
                                 <textarea name="note" id="noteTest" rows="10" v-model="form.note" class="form-control" placeholder="Описание"></textarea>
+                            </div>
+                            <div class="row mb-2 mx-0">
+                                Ответы
                             </div>
                             <TestItems></TestItems>
                             <div class="row p-0 mx-0">
@@ -61,7 +64,7 @@
         },
         data: () => ({
             form: {
-                // test_box_id: "",
+                test_box_id: "",
                 name: "",
                 note: ""
             },
@@ -73,7 +76,12 @@
         }),
         methods: {
             store() {
-                axios.post('/api/tests', this.form, {
+                // console.log(this.$route.params.id);
+                var id = this.$route.params.id;
+                this.form.test_box_id = id;
+                console.log(this.form);
+                // axios.post('/api/tests/'+ this.$route.params.id +'/question', this.form, {
+                axios.post('/api/tests/' + id + '/question', this.form, {
                     headers: {
                         "Content-type": "application/json"
                     }

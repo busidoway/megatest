@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Test extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'note'];
+    protected $fillable = ['test_box_id', 'name', 'note'];
+
+    public function test_box(){
+        return $this->belongsTo(TestBox::class);
+    }
+
 }
