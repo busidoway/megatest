@@ -1,7 +1,8 @@
 <template>
     <div class="test-items py-2 mb-5">
         <div class="row m-0 py-2" v-for="item in items" :key="item.label">
-            <span class="me-3" :if="item.label"># {{ item.label }}:</span><input type="text" name="item.label" class="form-control">
+            <span class="me-3" :if="item.label"># {{ item.label }}:</span><input type="text" name="item.label" v-model="form.text" class="form-control">
+            <input type="hidden" name="status" v-model="form.status" value="">
         </div>
         <div class="py-2">
             <button class="btn btn-sm btn-btn btn-outline-gray-500 d-inline-flex align-items-center" @click.prevent="addItem">

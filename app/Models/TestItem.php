@@ -8,5 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class TestItem extends Model
 {
     use HasFactory;
-    protected $fillable = ['text', 'status'];
+    // protected $fillable = ['items_array' => ['test_id', 'text', 'status']];
+    protected $fillable = ['test_id', 'text', 'status'];
+    public $timestamps = false;
+
+    public function test(){
+        return $this->belongsTo(Test::class);
+    }
+
 }

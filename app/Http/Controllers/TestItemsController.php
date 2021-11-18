@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Test;
+use App\Models\TestItem;
 use Illuminate\Http\Request;
+use Validator;
 
 class TestItemsController extends Controller
 {
@@ -34,7 +37,30 @@ class TestItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "text" => ["required"]
+            ]
+        );
+
+        if ($validator->fails()) {
+            return [
+                "status" => false,
+                "errors" => $validator->messages()
+            ];
+        }
+
+        $testitem = TestItem::create([
+            "test_id" => $request->test_id,
+            "text" => $request->text,
+            "status" => $request->status
+        ]);
+
+        return [
+            "status" => true,
+            "testitem" => $testitem
+        ];
     }
 
     /**

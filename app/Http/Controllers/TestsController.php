@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Test;
 use App\Models\TestBox;
+use App\Models\TestItem;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -51,6 +52,7 @@ class TestsController extends Controller
             $request->all(),
             [
                 "name" => ["required"]
+                // "text" => ["required"]
             ]
         );
 
@@ -67,13 +69,44 @@ class TestsController extends Controller
             "note" => $request->note
         ]);
 
-        // TestBoxTestRel::create([
-        //     "test_box_id" => 
-        // ]);
+        // if(!$request->status){
+        //     $testitem_status = 'n';
+        // }else{
+        //     $testitem_status = 'y';
+        // }
+
+        // $items_arr = $request->items_array;
+
+        /* if($items_arr){
+            foreach($items_arr as $key=>$item){
+                // if($item['status']){
+                //     $item_status = 'y';
+                // }else{
+                //     $item_status = 'n';
+                // }
+
+                $testitem = TestItem::create([
+                    "test_id" => $test->id,
+                    "text" => $item['text'],
+                    "status" => $item['status']
+                ]);
+                // $item_item = $item['text'];
+            }
+        }else{
+            $testitem = TestItem::create([
+                "test_id" => $test->id,
+                "text" => $request->text,
+                "status" => $testitem_status
+            ]);
+        } */
 
         return [
             "status" => true,
             "test" => $test
+            // "test_id" => $test->id,
+            // "testitem" => $testitem,
+            // "items_array" => $items_arr
+            // "item" => $item_item
         ];
 
     }

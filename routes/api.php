@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestBoxesController;
 use App\Http\Controllers\TestsController;
+use App\Http\Controllers\TestItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,5 @@ Route::resource('test_boxes', TestBoxesController::class);
 Route::get('tests/{id}', [TestsController::class, 'index']);
 
 Route::post('tests/{id}/question', [TestsController::class, 'store']);
+
+Route::post('tests/{id}/question/{qid}', [TestItemsController::class, 'store']);

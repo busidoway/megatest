@@ -14,4 +14,8 @@ class Test extends Model
         return $this->belongsTo(TestBox::class);
     }
 
+    public function test_items(){
+        return $this->hasMany(TestItem::class);
+    }
+
 }

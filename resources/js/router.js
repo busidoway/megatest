@@ -34,6 +34,10 @@ const routes = [
     {
         path: "/admin/tests/:id/question",
         component: TestEdit
+    },
+    {
+        path: "/admin/tests/:id/question/:qid",
+        component: TestEdit
     }
 ];
 
