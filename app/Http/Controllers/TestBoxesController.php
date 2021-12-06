@@ -20,6 +20,42 @@ class TestBoxesController extends Controller
         return TestBox::all();
     }
 
+    public function getDataTests()
+    {
+        return view('tests', ['tests' => TestBox::all()]);
+    }
+
+    public function getTest($id)
+    {
+
+        $testbox = TestBox::find($id);
+
+        $tests = $testbox->tests()->get();
+
+        // $test_items = $tests->test_items()->get();
+        // $test_items = '';
+
+        $arr_test = array();
+
+        foreach($tests as $k=>$t){
+            $test = Test::find($t['id']);
+            $test_items = $test->test_items()->get();
+            
+            if(sizeof($test_items) > 0)
+                $arr_test[$k] = $test_items;
+            // $arr_test[$k] = ["items" => $test_items];
+        }
+
+        // return view('test', ['tests' => $tests, 'test_items' => $test_items]);
+        // return [
+        //     "status" => true,
+        //     "tests" => $tests
+        // ];
+
+        return ['tests' => $tests, 'test_items' => $arr_test];
+        // return $arr_test;
+    }
+
     /**
      * Show the form for creating a new resource.
      *

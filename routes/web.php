@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TestBoxesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,9 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/test/{any}', function () {
+//     return view('test');
+// })->where('any', '.*');
+
 Route::get('/', function () {
     return view('index');
-});
+})->name('home');
+
+Route::get('/tests', [TestBoxesController::class, 'getDataTests'])->name('tests');
+
+// Route::get('/test/{id}', [TestBoxesController::class, 'getTest'])->name('data-test');
+
+Route::get('/test/{id}', function () {
+    return view('test');
+})->name('data-test');
 
 Auth::routes();
 
@@ -24,9 +37,9 @@ Route::get('/admin', function () {
 });
 
 // Route::get('admin/tests/{id}', 'TestsController@index');
-  
 
-Route::get('/{any}', function () {
+
+Route::get('/admin/{any}', function () {
     return view('admin.admin');
 })->where('any', '.*');
 

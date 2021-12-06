@@ -20,6 +20,7 @@ window.Vue = require('vue').default;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('v-header', require('./components/AdminNavbar.vue').default);
+// Vue.component('test', require('./views/Tests.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -28,8 +29,24 @@ Vue.component('v-header', require('./components/AdminNavbar.vue').default);
  */
 
 import router from "./router";
+import tests from "./views/Tests.vue";
 
 const app = new Vue({
     el: '#app',
     router
 });
+
+// Vue.component('tests', {
+//     props: ['tests'],
+//     template: tests
+// })
+
+// window.onload = function () {
+const app_test = new Vue({
+    el: '#app_test',
+    router,
+    components: {
+        tests
+    }
+});
+// }

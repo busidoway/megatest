@@ -14,9 +14,13 @@ class TestItemsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        //
+        $test = Test::find($id);
+
+        $test_items = $test->test_items()->get();
+
+        return $test_items;
     }
 
     /**
@@ -82,7 +86,11 @@ class TestItemsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $test = Test::find($id);
+
+        $test_items = $test->test_items()->get();
+
+        return $test_items;
     }
 
     /**

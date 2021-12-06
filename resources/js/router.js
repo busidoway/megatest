@@ -3,41 +3,46 @@ import Vue from 'vue';
 
 Vue.use(vueRouter);
 
-import Index from "./views/AdminIndex";
-import TestBoxes from "./views/AdminTestBoxes";
-import Setting from "./views/AdminSetting";
-import TestBoxEdit from "./views/AdminTestBoxEdit";
-import Tests from "./views/AdminTests";
-import TestEdit from "./views/AdminTestEdit";
+import AdminIndex from "./views/AdminIndex";
+import AdminTestBoxes from "./views/AdminTestBoxes";
+import AdminSetting from "./views/AdminSetting";
+import AdminTestBoxEdit from "./views/AdminTestBoxEdit";
+import AdminTests from "./views/AdminTests";
+import AdminTestEdit from "./views/AdminTestEdit";
+import Tests from "./views/Tests.vue";
 
 const routes = [
     {
         path: "/admin/index",
-        component: Index
+        component: AdminIndex
     },
     {
         path: "/admin/tests",
-        component: TestBoxes
+        component: AdminTestBoxes
     },
     {
         path: "/admin/setting",
-        component: Setting
+        component: AdminSetting
     },
     {
         path: "/admin/tests/edit",
-        component: TestBoxEdit
+        component: AdminTestBoxEdit
     },
     {
         path: "/admin/tests/:id",
+        component: AdminTests
+    },
+    {
+        path: "/admin/tests/:id/q",
+        component: AdminTestEdit
+    },
+    {
+        path: "/admin/tests/:id/q/:qid",
+        component: AdminTestEdit
+    },
+    {
+        path: "/test/:id",
         component: Tests
-    },
-    {
-        path: "/admin/tests/:id/question",
-        component: TestEdit
-    },
-    {
-        path: "/admin/tests/:id/question/:qid",
-        component: TestEdit
     }
 ];
 

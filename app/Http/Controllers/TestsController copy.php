@@ -145,11 +145,7 @@ class TestsController extends Controller
      */
     public function edit($id)
     {
-        $test = Test::find($id);
-
-        // $test_list = $test->get();
-
-        return $test;
+        //
     }
 
     /**
@@ -188,6 +184,12 @@ class TestsController extends Controller
             $test->save();
         }
 
+        $test->note = $request->note;
+
+        if($test->isDirty('note')){
+            $test->save();
+        }
+
         // $test->fill($arr_req);
 
         // if($test->isDirty()){
@@ -197,23 +199,6 @@ class TestsController extends Controller
         //         "note" => $request->note
         //     ]);
         // }
-
-        return [
-            "status" => true,
-            "test" => $test
-        ];
-    }
-
-    public function updateNote(Request $request, $qid)
-    {
-
-        $test = Test::find($qid);
-
-        $test->note = $request->note;
-
-        if($test->isDirty('note')){
-            $test->save();
-        }
 
         return [
             "status" => true,
