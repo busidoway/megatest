@@ -73,6 +73,7 @@
                     if (res.data.status) {
                         this.success = true;
                         this.error = false;
+                        this.$router.push('/admin/tests/'+ res.data.tests.id);
                     } else {
                         this.error = true;
                         this.success = false;

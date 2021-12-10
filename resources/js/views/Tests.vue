@@ -49,11 +49,7 @@
                 qid: "",
                 data: ""
             }],
-            test: {
-                // id: "",
-                // name: "",
-                // note: ""
-            }
+            test: []
         }),
         mounted() {
             this.loadTest(this.$route.params.id);
@@ -68,13 +64,16 @@
                     this.tests = res.data.tests;
 
                     for(var i in res.data.tests){
-                        if(i == 0) this.test = res.data.tests[i];
                         this.arr_test.push({
                             id: res.data.tests[i].id,
                             name: res.data.tests[i].name,
                             note: res.data.tests[i].note,
                             items: res.data.test_items[i]
                         });
+                    }
+
+                    for(var n in this.arr_test){
+                        if(n == 0) this.test = this.arr_test[n]
                     }
 
                     // console.log('arr_test', this.arr_test);

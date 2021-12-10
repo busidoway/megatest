@@ -12,10 +12,13 @@
                     <li class="breadcrumb-item active" aria-current="page">Создание вопроса</li>
                 </ol>
             </nav>
-            <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="d-flex justify-content-between w-100 flex-wrap mb-3">
                 <div class="mb-3 mb-lg-0">
                     <h1 class="h4">Создание вопроса</h1>
                 </div>
+            </div>
+            <div>
+                <router-link class="btn btn-gray-800 px-4" :to="{path: '/admin/tests/' + form.test_box_id}"><i class="fas fa-arrow-left me-2"></i> Назад</router-link>
             </div>
         </div>
         <div class="row">
@@ -64,10 +67,10 @@
                 <div class="card border-0 shadow components-section">
                     <div class="card-body">
                         <!-- <TestItems></TestItems> -->
-                        <div class="row mb-2 mx-0">
+                        <div class="row mb-2 mx-0" v-if="form.name">
                             <b>Ответы</b>
                         </div>
-                        <div class="test-items py-2 mb-5">
+                        <div class="test-items py-2 mb-5" v-if="form.name">
                             <div class="row m-0" v-for="(item, index) in items" :key="item.label">
                                 <form>
                                     <span class="me-3" :if="item.label"># {{ index + 1 }}:</span><input type="text" :name="'item' + item.label" v-model="item.value" :class="{ 'is-invalid':item.error }" :disabled="item.disabled" class="form-control">
@@ -148,6 +151,7 @@
         mounted() {
             this.editTest(this.$route.params.qid);
             this.editItems(this.$route.params.qid);
+            this.form.test_box_id = this.$route.params.id;
         },
         methods: {
             store() {
@@ -166,11 +170,12 @@
                         }
                     })
                     .then(res => {
-                        console.log(res.data);
+                        // console.log(res.data);
                         if (res.data.status) {
                             this.state.form.success = true;
                             this.state.form.error = false;
                             this.$router.push('/admin/tests/'+ this.$route.params.id +'/q/'+ res.data.test.id);
+                            console.log('qid:',this.$route.params.qid);
                             setTimeout(() => { this.state.form.success = false; }, this.settings.duration);
                         } else {
                             this.state.form.error = true;
@@ -203,33 +208,37 @@
                     var qid = this.$route.params.qid;
                 }
 
-                axios.post('/api/tests/q/note/' + qid, this.formNote, {
-                    headers: {
-                        "Content-type": "application/json"
-                    }
-                })
-                .then(res => {
-                    if (res.data.status) {
-                        this.state.form.success = false;
-                        this.state.form.success = true;
-                        this.state.form.error = false;
-                        setTimeout(() => { this.state.form.success = false; }, this.settings.duration);
-                    } else {
-                        this.state.form.error = true;
-                        this.state.form.success = false;
-                    }
-                })
+                if(qid){
+                    axios.post('/api/tests/q/note/' + qid, this.formNote, {
+                        headers: {
+                            "Content-type": "application/json"
+                        }
+                    })
+                    .then(res => {
+                        if (res.data.status) {
+                            this.state.form.success = false;
+                            this.state.form.success = true;
+                            this.state.form.error = false;
+                            setTimeout(() => { this.state.form.success = false; }, this.settings.duration);
+                        } else {
+                            this.state.form.error = true;
+                            this.state.form.success = false;
+                        }
+                    })
+                }
             },
             editTest(qid) {
-                axios.get('/api/tests/q/edit/' + qid)
-                .then(res => {
-                    this.testEditVal = res.data;
-                    if(res.data.name) this.form.name = res.data.name;
-                    if(res.data.note) this.formNote.note = res.data.note;
-                }).catch(err => {
-                    // this.not_found = true;
-                    console.log(err);
-                })
+                if(qid){
+                    axios.get('/api/tests/q/edit/' + qid)
+                    .then(res => {
+                        this.testEditVal = res.data;
+                        if(res.data.name) this.form.name = res.data.name;
+                        if(res.data.note) this.formNote.note = res.data.note;
+                    }).catch(err => {
+                        // this.not_found = true;
+                        console.log(err);
+                    })
+                }
             },
             storeItem(itemid, val) {
                 var id = this.$route.params.id,
@@ -264,24 +273,26 @@
                 }
             },
             editItems(qid) {
-                axios.get('/api/tests/q/edit/' + qid + '/items')
-                .then(res => {
-                    if(res.data){
-                        console.log(res.data);
-                        for(let i in res.data){
-                            this.items.push({
-                                label: this.items.length + 1,
-                                value: res.data[i].text,
-                                disabled: true,
-                                error: false,
-                                success: true
-                            })
+                if(qid){
+                    axios.get('/api/tests/q/edit/' + qid + '/items')
+                    .then(res => {
+                        if(res.data){
+                            console.log(res.data);
+                            for(let i in res.data){
+                                this.items.push({
+                                    label: this.items.length + 1,
+                                    value: res.data[i].text,
+                                    disabled: true,
+                                    error: false,
+                                    success: true
+                                })
+                            }
                         }
-                    }
-                }).catch(err => {
-                    // this.not_found = true;
-                    console.log(err);
-                })
+                    }).catch(err => {
+                        // this.not_found = true;
+                        console.log(err);
+                    })
+                }
             },
             deleteItem(id) {
                 var itemid = id - 1

@@ -25,7 +25,7 @@ const routes = [
         component: AdminSetting
     },
     {
-        path: "/admin/tests/edit",
+        path: "/admin/test",
         component: AdminTestBoxEdit
     },
     {

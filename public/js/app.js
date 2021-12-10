@@ -5344,6 +5344,8 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data.status) {
           _this.success = true;
           _this.error = false;
+
+          _this.$router.push('/admin/tests/' + res.data.tests.id);
         } else {
           _this.error = true;
           _this.success = false;
@@ -5653,6 +5655,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
  // import TestItems from "../components/AdminTestItems.vue";
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5706,6 +5711,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     this.editTest(this.$route.params.qid);
     this.editItems(this.$route.params.qid);
+    this.form.test_box_id = this.$route.params.id;
   },
   methods: {
     store: function store() {
@@ -5725,14 +5731,14 @@ __webpack_require__.r(__webpack_exports__);
             "Content-type": "application/json"
           }
         }).then(function (res) {
-          console.log(res.data);
-
+          // console.log(res.data);
           if (res.data.status) {
             _this.state.form.success = true;
             _this.state.form.error = false;
 
             _this.$router.push('/admin/tests/' + _this.$route.params.id + '/q/' + res.data.test.id);
 
+            console.log('qid:', _this.$route.params.qid);
             setTimeout(function () {
               _this.state.form.success = false;
             }, _this.settings.duration);
@@ -5772,35 +5778,39 @@ __webpack_require__.r(__webpack_exports__);
         var qid = this.$route.params.qid;
       }
 
-      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/tests/q/note/' + qid, this.formNote, {
-        headers: {
-          "Content-type": "application/json"
-        }
-      }).then(function (res) {
-        if (res.data.status) {
-          _this2.state.form.success = false;
-          _this2.state.form.success = true;
-          _this2.state.form.error = false;
-          setTimeout(function () {
+      if (qid) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/tests/q/note/' + qid, this.formNote, {
+          headers: {
+            "Content-type": "application/json"
+          }
+        }).then(function (res) {
+          if (res.data.status) {
             _this2.state.form.success = false;
-          }, _this2.settings.duration);
-        } else {
-          _this2.state.form.error = true;
-          _this2.state.form.success = false;
-        }
-      });
+            _this2.state.form.success = true;
+            _this2.state.form.error = false;
+            setTimeout(function () {
+              _this2.state.form.success = false;
+            }, _this2.settings.duration);
+          } else {
+            _this2.state.form.error = true;
+            _this2.state.form.success = false;
+          }
+        });
+      }
     },
     editTest: function editTest(qid) {
       var _this3 = this;
 
-      axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/tests/q/edit/' + qid).then(function (res) {
-        _this3.testEditVal = res.data;
-        if (res.data.name) _this3.form.name = res.data.name;
-        if (res.data.note) _this3.formNote.note = res.data.note;
-      })["catch"](function (err) {
-        // this.not_found = true;
-        console.log(err);
-      });
+      if (qid) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/tests/q/edit/' + qid).then(function (res) {
+          _this3.testEditVal = res.data;
+          if (res.data.name) _this3.form.name = res.data.name;
+          if (res.data.note) _this3.formNote.note = res.data.note;
+        })["catch"](function (err) {
+          // this.not_found = true;
+          console.log(err);
+        });
+      }
     },
     storeItem: function storeItem(itemid, val) {
       var _this4 = this;
@@ -5839,24 +5849,26 @@ __webpack_require__.r(__webpack_exports__);
     editItems: function editItems(qid) {
       var _this5 = this;
 
-      axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/tests/q/edit/' + qid + '/items').then(function (res) {
-        if (res.data) {
-          console.log(res.data);
+      if (qid) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/tests/q/edit/' + qid + '/items').then(function (res) {
+          if (res.data) {
+            console.log(res.data);
 
-          for (var i in res.data) {
-            _this5.items.push({
-              label: _this5.items.length + 1,
-              value: res.data[i].text,
-              disabled: true,
-              error: false,
-              success: true
-            });
+            for (var i in res.data) {
+              _this5.items.push({
+                label: _this5.items.length + 1,
+                value: res.data[i].text,
+                disabled: true,
+                error: false,
+                success: true
+              });
+            }
           }
-        }
-      })["catch"](function (err) {
-        // this.not_found = true;
-        console.log(err);
-      });
+        })["catch"](function (err) {
+          // this.not_found = true;
+          console.log(err);
+        });
+      }
     },
     deleteItem: function deleteItem(id) {
       var itemid = id - 1; // itemid = itemid - 1;
@@ -6028,13 +6040,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       loading: true,
       error_del: false,
-      tests: []
+      tests: [],
+      test_box_id: ""
     };
   },
   mounted: function mounted() {
@@ -6050,14 +6066,15 @@ __webpack_require__.r(__webpack_exports__);
       .then(function (res) {
         // console.log(res.data);
         _this.loading = false;
-        _this.tests = res.data; //setTimeout(() => { }, 500)
+        _this.tests = res.data;
+        _this.test_box_id = id; //setTimeout(() => { }, 500)
       })["catch"](function (err) {
         // this.not_found = true;
         console.log(err);
       });
     },
     goToEditQuestion: function goToEditQuestion() {
-      this.$router.push('/admin/tests/' + this.$route.params.id + '/question');
+      this.$router.push('/admin/tests/' + this.$route.params.id + '/q');
     },
     deleteTest: function deleteTest(id) {
       var _this2 = this;
@@ -6137,10 +6154,7 @@ __webpack_require__.r(__webpack_exports__);
         qid: "",
         data: ""
       }],
-      test: {// id: "",
-        // name: "",
-        // note: ""
-      }
+      test: []
     };
   },
   mounted: function mounted() {
@@ -6157,14 +6171,16 @@ __webpack_require__.r(__webpack_exports__);
         _this.tests = res.data.tests;
 
         for (var i in res.data.tests) {
-          if (i == 0) _this.test = res.data.tests[i];
-
           _this.arr_test.push({
             id: res.data.tests[i].id,
             name: res.data.tests[i].name,
             note: res.data.tests[i].note,
             items: res.data.test_items[i]
           });
+        }
+
+        for (var n in _this.arr_test) {
+          if (n == 0) _this.test = _this.arr_test[n];
         } // console.log('arr_test', this.arr_test);
 
       })["catch"](function (err) {
@@ -6363,7 +6379,7 @@ var routes = [{
   path: "/admin/setting",
   component: _views_AdminSetting__WEBPACK_IMPORTED_MODULE_4__["default"]
 }, {
-  path: "/admin/tests/edit",
+  path: "/admin/test",
   component: _views_AdminTestBoxEdit__WEBPACK_IMPORTED_MODULE_5__["default"]
 }, {
   path: "/admin/tests/:id",
@@ -44584,19 +44600,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/bootstrap/dist/css/bootstrap.min.css":
-/*!***********************************************************!*\
-  !*** ./node_modules/bootstrap/dist/css/bootstrap.min.css ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
 /***/ "./node_modules/popper.js/dist/esm/popper.js":
 /*!***************************************************!*\
   !*** ./node_modules/popper.js/dist/esm/popper.js ***!
@@ -51071,7 +51074,7 @@ var render = function() {
               {
                 staticClass:
                   "btn btn-sm btn-gray-800 d-inline-flex align-items-center",
-                attrs: { to: { path: "/admin/test-edit" } }
+                attrs: { to: { path: "/admin/test" } }
               },
               [
                 _c(
@@ -51607,7 +51610,25 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _vm._m(0)
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "div",
+        [
+          _c(
+            "router-link",
+            {
+              staticClass: "btn btn-gray-800 px-4",
+              attrs: { to: { path: "/admin/tests/" + _vm.form.test_box_id } }
+            },
+            [
+              _c("i", { staticClass: "fas fa-arrow-left me-2" }),
+              _vm._v(" Назад")
+            ]
+          )
+        ],
+        1
+      )
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "row" }, [
@@ -51804,101 +51825,126 @@ var render = function() {
       _c("div", { staticClass: "col-6 mb-4" }, [
         _c("div", { staticClass: "card border-0 shadow components-section" }, [
           _c("div", { staticClass: "card-body" }, [
-            _vm._m(2),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "test-items py-2 mb-5" },
-              _vm._l(_vm.items, function(item, index) {
-                return _c("div", { key: item.label, staticClass: "row m-0" }, [
-                  _c("form", [
-                    _c(
-                      "span",
-                      { staticClass: "me-3", attrs: { if: item.label } },
-                      [_vm._v("# " + _vm._s(index + 1) + ":")]
-                    ),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: item.value,
-                          expression: "item.value"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      class: { "is-invalid": item.error },
-                      attrs: {
-                        type: "text",
-                        name: "item" + item.label,
-                        disabled: item.disabled
-                      },
-                      domProps: { value: item.value },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(item, "value", $event.target.value)
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.iform.status,
-                          expression: "iform.status"
-                        }
-                      ],
-                      attrs: { type: "hidden", name: "status", value: "" },
-                      domProps: { value: _vm.iform.status },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.iform, "status", $event.target.value)
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "d-flex justify-content-end" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn py-0 px-2 text-success",
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.storeItem(item.label, item.value)
-                            }
-                          }
-                        },
-                        [_c("i", { staticClass: "fas fa-check" })]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn py-0 px-2 text-danger ms-1",
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.deleteItem(index)
-                            }
-                          }
-                        },
-                        [_c("i", { staticClass: "fas fa-times" })]
-                      )
-                    ])
-                  ])
+            _vm.form.name
+              ? _c("div", { staticClass: "row mb-2 mx-0" }, [
+                  _c("b", [_vm._v("Ответы")])
                 ])
-              }),
-              0
-            )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.form.name
+              ? _c(
+                  "div",
+                  { staticClass: "test-items py-2 mb-5" },
+                  _vm._l(_vm.items, function(item, index) {
+                    return _c(
+                      "div",
+                      { key: item.label, staticClass: "row m-0" },
+                      [
+                        _c("form", [
+                          _c(
+                            "span",
+                            { staticClass: "me-3", attrs: { if: item.label } },
+                            [_vm._v("# " + _vm._s(index + 1) + ":")]
+                          ),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: item.value,
+                                expression: "item.value"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            class: { "is-invalid": item.error },
+                            attrs: {
+                              type: "text",
+                              name: "item" + item.label,
+                              disabled: item.disabled
+                            },
+                            domProps: { value: item.value },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(item, "value", $event.target.value)
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.iform.status,
+                                expression: "iform.status"
+                              }
+                            ],
+                            attrs: {
+                              type: "hidden",
+                              name: "status",
+                              value: ""
+                            },
+                            domProps: { value: _vm.iform.status },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.iform,
+                                  "status",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "d-flex justify-content-end" },
+                            [
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn py-0 px-2 text-success",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.storeItem(
+                                        item.label,
+                                        item.value
+                                      )
+                                    }
+                                  }
+                                },
+                                [_c("i", { staticClass: "fas fa-check" })]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn py-0 px-2 text-danger ms-1",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.deleteItem(index)
+                                    }
+                                  }
+                                },
+                                [_c("i", { staticClass: "fas fa-times" })]
+                              )
+                            ]
+                          )
+                        ])
+                      ]
+                    )
+                  }),
+                  0
+                )
+              : _vm._e()
           ])
         ])
       ])
@@ -51912,7 +51958,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c(
       "div",
-      { staticClass: "d-flex justify-content-between w-100 flex-wrap" },
+      { staticClass: "d-flex justify-content-between w-100 flex-wrap mb-3" },
       [
         _c("div", { staticClass: "mb-3 mb-lg-0" }, [
           _c("h1", { staticClass: "h4" }, [_vm._v("Создание вопроса")])
@@ -51927,14 +51973,6 @@ var staticRenderFns = [
     return _c("button", { staticClass: "btn py-0 px-2 text-warning ms-1" }, [
       _c("i", { staticClass: "fas fa-times" }),
       _vm._v(" Очистить")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row mb-2 mx-0" }, [
-      _c("b", [_vm._v("Ответы")])
     ])
   }
 ]
@@ -52091,6 +52129,22 @@ var render = function() {
           )
         ])
       ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c(
+          "router-link",
+          {
+            staticClass: "btn btn-gray-800 px-4",
+            attrs: { to: { path: "/admin/tests" } }
+          },
+          [_c("i", { staticClass: "fas fa-arrow-left me-2" }), _vm._v(" Назад")]
+        )
+      ],
+      1
     ),
     _vm._v(" "),
     _c("div", { staticClass: "table-settings mb-4" }, [
@@ -52279,23 +52333,44 @@ var render = function() {
           _vm._v(" "),
           _c(
             "tbody",
-            _vm._l(_vm.tests, function(test) {
+            _vm._l(_vm.tests, function(test, index) {
               return _c("tr", { key: test.id }, [
                 _c("td", [
                   _c("a", { staticClass: "fw-bold", attrs: { href: "#" } }, [
                     _vm._v(
                       "\n                                " +
-                        _vm._s(test.id) +
+                        _vm._s(index + 1) +
                         "\n                            "
                     )
                   ])
                 ]),
                 _vm._v(" "),
-                _c("td", [
-                  _c("span", { staticClass: "fw-normal" }, [
-                    _vm._v(_vm._s(test.name))
-                  ])
-                ]),
+                _c(
+                  "td",
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        staticClass: "text-info",
+                        attrs: {
+                          to: {
+                            path:
+                              "/admin/tests/" +
+                              _vm.test_box_id +
+                              "/q/" +
+                              test.id
+                          }
+                        }
+                      },
+                      [
+                        _c("span", { staticClass: "fw-normal" }, [
+                          _vm._v(_vm._s(test.name))
+                        ])
+                      ]
+                    )
+                  ],
+                  1
+                ),
                 _vm._v(" "),
                 _vm._m(2, true),
                 _vm._v(" "),
@@ -52304,10 +52379,6 @@ var render = function() {
                     _vm._m(3, true),
                     _vm._v(" "),
                     _c("div", { staticClass: "dropdown-menu py-0" }, [
-                      _vm._m(4, true),
-                      _vm._v(" "),
-                      _vm._m(5, true),
-                      _vm._v(" "),
                       _c(
                         "a",
                         {
@@ -52334,7 +52405,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(6)
+        _vm._m(4)
       ]
     )
   ])
@@ -52398,29 +52469,6 @@ var staticRenderFns = [
           _vm._v("Toggle Dropdown")
         ])
       ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "dropdown-item rounded-top",
-        attrs: { href: "javascript:;" }
-      },
-      [_c("span", { staticClass: "fas fa-eye me-2" }), _vm._v("Просмотр")]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      { staticClass: "dropdown-item", attrs: { href: "javascript:;" } },
-      [_c("span", { staticClass: "fas fa-edit me-2" }), _vm._v("Редактировать")]
     )
   },
   function() {
@@ -68055,8 +68103,7 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"/js/app": 0,
-/******/ 			"css/app": 0,
-/******/ 			"css/bootstrap.min": 0
+/******/ 			"css/app": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -68106,11 +68153,10 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["css/app","css/bootstrap.min"], () => (__webpack_require__("./resources/js/app.js")))
-/******/ 	__webpack_require__.O(undefined, ["css/app","css/bootstrap.min"], () => (__webpack_require__("./node_modules/popper.js/dist/umd/popper.js")))
-/******/ 	__webpack_require__.O(undefined, ["css/app","css/bootstrap.min"], () => (__webpack_require__("./node_modules/bootstrap/dist/js/bootstrap.js")))
-/******/ 	__webpack_require__.O(undefined, ["css/app","css/bootstrap.min"], () => (__webpack_require__("./resources/sass/app.scss")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app","css/bootstrap.min"], () => (__webpack_require__("./node_modules/bootstrap/dist/css/bootstrap.min.css")))
+/******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/js/app.js")))
+/******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./node_modules/popper.js/dist/umd/popper.js")))
+/******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./node_modules/bootstrap/dist/js/bootstrap.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/sass/app.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

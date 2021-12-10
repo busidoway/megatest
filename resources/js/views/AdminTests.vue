@@ -25,6 +25,9 @@
                 </button>
             </div>
         </div>
+        <div class="mb-4">
+            <router-link class="btn btn-gray-800 px-4" :to="{path: '/admin/tests'}"><i class="fas fa-arrow-left me-2"></i> Назад</router-link>
+        </div>
         <div class="table-settings mb-4">
             <div class="row align-items-center justify-content-between">
                 <div class="col col-md-6 col-lg-3 col-xl-4">
@@ -74,14 +77,14 @@
                     </thead>
                     <tbody>
                         <!-- Item -->
-                        <tr v-for="test in tests" :key="test.id">
+                        <tr v-for="(test, index) in tests" :key="test.id">
                             <td>
                                 <a href="#" class="fw-bold">
-                                    {{ test.id }}
+                                    {{ index + 1 }}
                                 </a>
                             </td>
                             <td>
-                                <span class="fw-normal">{{ test.name }}</span>
+                                <router-link :to="{path: '/admin/tests/' + test_box_id + '/q/' + test.id}" class="text-info"><span class="fw-normal">{{ test.name }}</span></router-link>
                             </td>
                             <!-- <td><span class="fw-normal">{{ test.created_at }}</span></td> -->
                             <td><span class="fw-bold text-success">Активный</span></td>
@@ -94,8 +97,8 @@
                                         <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
                                     <div class="dropdown-menu py-0">
-                                        <a class="dropdown-item rounded-top" href="javascript:;"><span class="fas fa-eye me-2"></span>Просмотр</a>
-                                        <a class="dropdown-item" href="javascript:;"><span class="fas fa-edit me-2"></span>Редактировать</a>
+                                        <!-- <a class="dropdown-item rounded-top" href="javascript:;"><span class="fas fa-eye me-2"></span>Просмотр</a> -->
+                                        <!-- <a class="dropdown-item" href="javascript:;"><span class="fas fa-edit me-2"></span>Редактировать</a> -->
                                         <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="deleteTest(test.id)"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
                                     </div>
                                 </div>
@@ -141,7 +144,8 @@
         data: () => ({
             loading: true,
             error_del: false,
-            tests: []
+            tests: [],
+            test_box_id: ""
         }),
         mounted() {
             this.loadTests(this.$route.params.id);
@@ -158,6 +162,7 @@
                     // console.log(res.data);
                     this.loading = false;
                     this.tests = res.data;
+                    this.test_box_id = id;
                     //setTimeout(() => { }, 500)
                 }).catch(err => {
                     // this.not_found = true;
@@ -165,7 +170,7 @@
                 })
             },
             goToEditQuestion(){
-                this.$router.push('/admin/tests/'+ this.$route.params.id +'/question');
+                this.$router.push('/admin/tests/'+ this.$route.params.id +'/q');
             },
             deleteTest(id){
                 axios.delete('/api/tests/'+id)
