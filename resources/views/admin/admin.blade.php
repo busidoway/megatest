@@ -31,6 +31,8 @@
 <!-- Volt CSS -->
 <link type="text/css" href="/css/volt.css" rel="stylesheet">
 
+<link type="text/css" href="/css/admin_app.css" rel="stylesheet">
+
 </head>
 
 <body>

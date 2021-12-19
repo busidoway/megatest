@@ -18,15 +18,16 @@
                 <h2 class="h4">Вопросы</h2>
                 <p class="mb-0">Список вопросов.</p>
             </div>
+            
+        </div>
+        <div class="mb-4 d-flex justify-content-between">
+            <router-link class="btn btn-gray-800 px-4" :to="{path: '/admin/tests'}"><i class="fas fa-arrow-left me-2"></i> Назад</router-link>
             <div class="btn-toolbar mb-2 mb-md-0">
-                <button @click="goToEditQuestion()" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+                <button @click="goToEditQuestion()" class="btn btn-sm btn-secondary d-inline-flex align-items-center">
                     <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Добавить вопрос
                 </button>
             </div>
-        </div>
-        <div class="mb-4">
-            <router-link class="btn btn-gray-800 px-4" :to="{path: '/admin/tests'}"><i class="fas fa-arrow-left me-2"></i> Назад</router-link>
         </div>
         <div class="table-settings mb-4">
             <div class="row align-items-center justify-content-between">
@@ -37,7 +38,7 @@
                                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                             </svg>
                         </span>
-                        <input type="text" class="form-control" placeholder="Search orders">
+                        <input type="text" class="form-control" placeholder="Поиск">
                     </div>
                 </div>
                 <div class="col-4 col-md-2 col-xl-1 ps-md-0 text-end">
@@ -79,8 +80,8 @@
                         <!-- Item -->
                         <tr v-for="(test, index) in tests" :key="test.id">
                             <td>
-                                <a href="#" class="fw-bold">
-                                    {{ index + 1 }}
+                                <a href="#" class="fw-bold" :data-num="index">
+                                    {{ test.label }}
                                 </a>
                             </td>
                             <td>
@@ -99,7 +100,7 @@
                                     <div class="dropdown-menu py-0">
                                         <!-- <a class="dropdown-item rounded-top" href="javascript:;"><span class="fas fa-eye me-2"></span>Просмотр</a> -->
                                         <!-- <a class="dropdown-item" href="javascript:;"><span class="fas fa-edit me-2"></span>Редактировать</a> -->
-                                        <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="deleteTest(test.id)"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
+                                        <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="getTestId(test.id)" data-bs-toggle="modal" data-bs-target="#modal-remove"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
                                     </div>
                                 </div>
                             </td>
@@ -107,32 +108,22 @@
                     </tbody>
                 </table>
                 <div class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination mb-0">
-                            <li class="page-item">
-                                <a class="page-link" href="#">Previous</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">4</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">5</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div class="fw-normal small mt-4 mt-lg-0">Showing <b>5</b> out of <b>25</b> entries</div>
+                    <Pagination :total="total" :item="count_tests" @page-changed="loadListTests"/>
+                    <div class="fw-normal small mt-4 mt-lg-0">Отображено <b>{{ curr_count }}</b> из <b>{{ total }}</b> записей</div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-remove" tabindex="-1" role="dialog" aria-labelledby="modal-remove" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="h6 modal-title">Подтверждение удаления</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" @click.prevent="deleteTest(test.q.id)" data-bs-dismiss="modal">Удалить</button>
+                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Отмена</button>
+                        </div>
+                    </div>
                 </div>
             </div>
     </div>
@@ -140,29 +131,61 @@
 
 <script>
     import axios from 'axios';
+    import Pagination from "../components/Pagination";
     export default {
         data: () => ({
             loading: true,
             error_del: false,
             tests: [],
-            test_box_id: ""
+            test_box_id: "",
+            test: {
+                q: {
+                    id: ""
+                }
+            },
+            tests_data: [],
+            page: 1,
+            total: 0,
+            count_tests: 10,
+            curr_count: 0
         }),
+        components: {
+            Pagination
+        },
         mounted() {
             this.loadTests(this.$route.params.id);
-            // console.log(this.$route.params.id);
+            this.loadListTests(this.page)
         },
         methods: {
             loadTests(id) {
-                // var id = this.$route.params.id;
-                // console.log(this.$route.params.id);
+                var page = this.$route.params.page;
+                var arr_test = [];
                 axios.get('/api/tests/' + id)
-                // axios.get('/admin/tests/' + id)
                 .then(res => {
-                    
-                    // console.log(res.data);
                     this.loading = false;
-                    this.tests = res.data;
+
+                    for(var i=0; i<res.data.length; i++){
+                        arr_test.push({
+                            label: i + 1,
+                            created_at: res.data[i].created_at,
+                            id: res.data[i].id,
+                            name: res.data[i].name,
+                            note: res.data[i].note,
+                            test_box_id: res.data[i].test_box_id,
+                            updated_at: res.data[i].updated_at,
+                        });
+                    }
+
+                    this.tests = arr_test;
                     this.test_box_id = id;
+                    this.tests_data = arr_test;
+
+                    this.total = res.data.length;
+                    if(page){
+                        this.loadListTests(page)
+                    }else if(this.total > this.count_tests){
+                        this.loadListTests(1)
+                    }
                     //setTimeout(() => { }, 500)
                 }).catch(err => {
                     // this.not_found = true;
@@ -172,14 +195,42 @@
             goToEditQuestion(){
                 this.$router.push('/admin/tests/'+ this.$route.params.id +'/q');
             },
+            getTestId(id) {
+                if(id) this.test.q.id = id;
+            },
             deleteTest(id){
-                axios.delete('/api/tests/'+id)
+                var test_box_id = this.$route.params.id;
+                // console.log(id);
+                axios.get('/api/tests/del/'+id)
                 .then(res => {
-                    this.loadTests();
+                    if(res.data.status)
+                        this.loadTests(test_box_id);
+                    else
+                        this.error_del = true;
                 })
                 .catch(err => {
                     this.error_del = true;
                 })
+            },
+            loadListTests(pageNumber){
+                var test_box_id = this.$route.params.id;
+                var path = '/admin/tests/' + test_box_id + '/page/'+pageNumber;
+                var start_page = (this.count_tests * pageNumber) - this.count_tests;
+                var end_page = pageNumber * this.count_tests;
+                var arr_tests = [];
+                var n = 0;
+                for(var i=0; i<this.tests_data.length; i++){
+                    if(i >= start_page && i < end_page){
+                        n++;
+                        arr_tests.push(this.tests_data[i]);
+                    }
+                }
+                // console.log(arr_tests);
+                this.tests = arr_tests;
+                this.curr_count = n;
+                if (this.$route.path !== path){
+                    this.$router.push('/admin/tests/' + test_box_id + '/page/'+pageNumber);
+                }
             }
         }
     }

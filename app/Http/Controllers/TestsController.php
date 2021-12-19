@@ -69,44 +69,9 @@ class TestsController extends Controller
             "note" => $request->note
         ]);
 
-        // if(!$request->status){
-        //     $testitem_status = 'n';
-        // }else{
-        //     $testitem_status = 'y';
-        // }
-
-        // $items_arr = $request->items_array;
-
-        /* if($items_arr){
-            foreach($items_arr as $key=>$item){
-                // if($item['status']){
-                //     $item_status = 'y';
-                // }else{
-                //     $item_status = 'n';
-                // }
-
-                $testitem = TestItem::create([
-                    "test_id" => $test->id,
-                    "text" => $item['text'],
-                    "status" => $item['status']
-                ]);
-                // $item_item = $item['text'];
-            }
-        }else{
-            $testitem = TestItem::create([
-                "test_id" => $test->id,
-                "text" => $request->text,
-                "status" => $testitem_status
-            ]);
-        } */
-
         return [
             "status" => true,
             "test" => $test
-            // "test_id" => $test->id,
-            // "testitem" => $testitem,
-            // "items_array" => $items_arr
-            // "item" => $item_item
         ];
 
     }
@@ -230,8 +195,16 @@ class TestsController extends Controller
     public function destroy($id)
     {
         $test = Test::find($id);
+        // return ["test" => $test];
         if ($test) {
             $test->delete();
+            return [
+                "status" => true
+            ];
+        }else{
+            return [
+                "status" => false
+            ];
         }
     }
 }

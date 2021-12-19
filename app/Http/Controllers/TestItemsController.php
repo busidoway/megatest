@@ -39,7 +39,7 @@ class TestItemsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $qid, $id)
     {
         $validator = Validator::make(
             $request->all(),
@@ -55,11 +55,26 @@ class TestItemsController extends Controller
             ];
         }
 
-        $testitem = TestItem::create([
-            "test_id" => $request->test_id,
-            "text" => $request->text,
-            "status" => $request->status
-        ]);
+        if($id){
+
+            $testitem = TestItem::find($id);
+            $testitem->text = $request->text;
+            $testitem->status = $request->status;
+
+            if($testitem->isDirty('text') || $testitem->isDirty('status')){
+                $testitem->save();
+            }
+
+        }else{
+
+            $testitem = TestItem::create([
+                // "test_id" => $request->test_id,
+                "test_id" => $qid,
+                "text" => $request->text,
+                "status" => $request->status
+            ]);
+
+        }
 
         return [
             "status" => true,
@@ -102,7 +117,7 @@ class TestItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+  
     }
 
     /**
@@ -113,6 +128,16 @@ class TestItemsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $test = TestItem::find($id);
+        if ($test) {
+            $test->delete();
+            return [
+                "status" => true
+            ];
+        }else{
+            return [
+                "status" => false
+            ];
+        }
     }
 }

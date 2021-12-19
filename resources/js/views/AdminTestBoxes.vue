@@ -1,6 +1,6 @@
 <template>
     <div class="admin-tests">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-end py-4">
             <div class="d-block mb-4 mb-md-0">
                 <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
                     <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
@@ -15,8 +15,8 @@
                 <h2 class="h4">Тесты</h2>
                 <p class="mb-0">Список тестов.</p>
             </div>
-            <div class="btn-toolbar mb-2 mb-md-0">
-                <router-link :to="{path: '/admin/test'}" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+            <div class="d-flex justify-content-end">
+                <router-link :to="{path: '/admin/test'}" class="btn btn-sm btn-secondary d-inline-flex align-items-center">
                     <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Создать тест
                 </router-link>
@@ -31,7 +31,7 @@
                                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                             </svg>
                         </span>
-                        <input type="text" class="form-control" placeholder="Search orders">
+                        <input type="text" class="form-control" placeholder="Поиск">
                     </div>
                 </div>
                 <div class="col-4 col-md-2 col-xl-1 ps-md-0 text-end">
@@ -41,7 +41,7 @@
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
-                            <span class="small ps-3 fw-bold text-dark">Show</span>
+                            <span class="small ps-3 fw-bold text-dark">Отобразить</span>
                             <a class="dropdown-item d-flex align-items-center fw-bold" href="#">10 <svg class="icon icon-xxs ms-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></a>
                             <a class="dropdown-item fw-bold" href="#">20</a>
                             <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
@@ -92,8 +92,8 @@
                                     </button>
                                     <div class="dropdown-menu py-0">
                                         <!-- <a class="dropdown-item rounded-top" href="javascript:;" @click="gotoTest(test.id)"><span class="fas fa-eye me-2"></span>Просмотр</a> -->
-                                        <a class="dropdown-item" href="javascript:;"><span class="fas fa-edit me-2"></span>Редактировать</a>
-                                        <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="deleteTest(test.id)"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
+                                        <router-link class="dropdown-item" :to="{path: '/admin/test/' + test.id}"><span class="fas fa-edit me-2"></span>Редактировать</router-link>
+                                        <a class="dropdown-item text-danger rounded-bottom" href="javascript:;" @click="getTestId(test.id)" data-bs-toggle="modal" data-bs-target="#modal-remove"><span class="fas fa-trash-alt me-2"></span>Удалить</a>
                                     </div>
                                 </div>
                             </td>
@@ -101,32 +101,22 @@
                     </tbody>
                 </table>
                 <div class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination mb-0">
-                            <li class="page-item">
-                                <a class="page-link" href="#">Previous</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">4</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">5</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div class="fw-normal small mt-4 mt-lg-0">Showing <b>5</b> out of <b>25</b> entries</div>
+                    <Pagination :total="total" :item="count_tests" @page-changed="loadListTests"/>
+                    <div class="fw-normal small mt-4 mt-lg-0">Отображено <b>{{ curr_count }}</b> из <b>{{ total }}</b> записей</div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-remove" tabindex="-1" role="dialog" aria-labelledby="modal-remove" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="h6 modal-title">Подтверждение удаления</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" @click.prevent="deleteTest(test.id)" data-bs-dismiss="modal">Удалить</button>
+                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Отмена</button>
+                        </div>
+                    </div>
                 </div>
             </div>
     </div>
@@ -134,42 +124,80 @@
 
 <script>
     import axios from 'axios';
+    import Pagination from "../components/Pagination";
     export default {
         data: () => ({
             loading: true,
             error_del: false,
-            tests: []
+            tests: [],
+            test: {
+                id: ""
+            },
+            tests_data: [],
+            page: 1,
+            total: 0,
+            count_tests: 10,
+            curr_count: 0
         }),
+        components: {
+            Pagination
+        },
         mounted() {
             this.loadTests();
+            this.loadListTests(this.page)
         },
         methods: {
             loadTests() {
+                var page = this.$route.params.page;
                 axios.get('/api/test_boxes')
                 .then(res => {
                     this.loading = false;
                     this.tests = res.data;
+                    this.tests_data = res.data;
+                    this.total = res.data.length;
+                    if(page){
+                        this.loadListTests(page)
+                    }else if(this.total > this.count_tests){
+                        this.loadListTests(1)
+                    }
                     //setTimeout(() => { }, 500)
                 })
             },
             gotoTest(id) {
                 this.$router.push('/admin/tests/'+id);
-                // axios.get('/api/tests/')
-                // .then(res => {
-                //     this.$route.params.id;
-                // })
-                // .catch(err => {
-                //     //this.error_del = true;
-                // })
+            },
+            getTestId(id) {
+                if(id) this.test.id = id;
             },
             deleteTest(id){
-                axios.delete('/api/test_boxes/'+id)
+                axios.post('/api/test_box/del/'+id)
                 .then(res => {
-                    this.loadTests();
+                    if(res.data.status)
+                        this.loadTests();
+                    else
+                        this.error_del = true;
                 })
                 .catch(err => {
                     this.error_del = true;
                 })
+            },
+            loadListTests(pageNumber){
+                var path = '/admin/tests/page/'+pageNumber;
+                var start_page = (this.count_tests * pageNumber) - this.count_tests;
+                var end_page = pageNumber * this.count_tests;
+                var arr_tests = [];
+                var n = 0;
+                for(var i=0; i<this.tests_data.length; i++){
+                    if(i >= start_page && i < end_page){
+                        n++;
+                        arr_tests.push(this.tests_data[i]);
+                    }
+                }
+                this.tests = arr_tests;
+                this.curr_count = n;
+                if (this.$route.path !== path){
+                    this.$router.push('/admin/tests/page/'+pageNumber);
+                }
             }
         }
     }

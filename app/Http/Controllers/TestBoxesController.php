@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\TestBox;
 use App\Models\Test;
+use App\Models\TestItem;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -41,8 +42,14 @@ class TestBoxesController extends Controller
             $test = Test::find($t['id']);
             $test_items = $test->test_items()->get();
             
-            if(sizeof($test_items) > 0)
+            if(sizeof($test_items) > 0){
+                // for($i=0; $i<count($test_items); $i++){
+                //     $n=1;
+                //     if($test_items[$i]['status'] == 'y') $n++;
+                //     if($n>1) $arr_test[$k]['input'] = 'checkbox';
+                // }
                 $arr_test[$k] = $test_items;
+            }
             // $arr_test[$k] = ["items" => $test_items];
         }
 
@@ -52,8 +59,44 @@ class TestBoxesController extends Controller
         //     "tests" => $tests
         // ];
 
-        return ['tests' => $tests, 'test_items' => $arr_test];
+        return ['testbox' => $testbox, 'tests' => $tests, 'test_items' => $arr_test];
         // return $arr_test;
+    }
+
+    public function getResult(Request $request, $id) {
+        
+        if($request){
+
+            $testbox = TestBox::find($id);
+
+            $arr = array();
+
+            foreach($request->result as $key=>$val){
+                foreach($val as $k=>$v){
+                    $test = Test::find($k);
+                    $test_item = TestItem::find($v);
+                    if($test_item->status == 'y'){
+                        $arr[$k]['name'] = $test->name;
+                        $arr[$k]['item'] = $test_item->text;
+                        $arr[$k]['status'] = true;
+                    }else{
+                        $arr[$k]['name'] = $test->name;
+                        $arr[$k]['item'] = $test_item->text;
+                        $arr[$k]['status'] = false;
+                    }
+                }
+            }
+
+            // for($i=0; $i<count($request); $i++){
+            //     $test = Test::find($request[$i]);
+            // }
+
+            return $arr;
+
+        }
+
+        // return $request;
+
     }
 
     /**
@@ -72,7 +115,7 @@ class TestBoxesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
         $validator = Validator::make(
             $request->all(),
@@ -88,15 +131,35 @@ class TestBoxesController extends Controller
             ];
         }
 
-        $testbox = TestBox::create([
-            "name" => $request->name,
-            "note" => $request->note
-        ]);
+        if($id){
 
-        return [
-            "status" => true,
-            "testbox" => $testbox
-        ];
+            $testbox = TestBox::find($id);
+            $testbox->name = $request->name;
+
+            if($testbox->isDirty('name')){
+                $testbox->save();
+            }
+
+            return [
+                "status" => true,
+                "store" => false,
+                "testbox" => $testbox
+            ];
+
+        }else{
+
+            $testbox = TestBox::create([
+                "name" => $request->name,
+                "note" => $request->note
+            ]);
+
+            return [
+                "status" => true,
+                "store" => true,
+                "testbox" => $testbox
+            ];
+
+        }
     }
 
     /**
@@ -126,7 +189,9 @@ class TestBoxesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $test = TestBox::find($id);
+
+        return $test;
     }
 
     /**
@@ -141,6 +206,23 @@ class TestBoxesController extends Controller
         //
     }
 
+    public function updateNote(Request $request, $id)
+    {
+
+        $test = TestBox::find($id);
+
+        $test->note = $request->note;
+
+        if($test->isDirty('note')){
+            $test->save();
+        }
+
+        return [
+            "status" => true,
+            "test" => $test
+        ];
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -149,6 +231,16 @@ class TestBoxesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $test = TestBox::find($id);
+        if ($test) {
+            $test->delete();
+            return [
+                "status" => true
+            ];
+        }else{
+            return [
+                "status" => false
+            ];
+        }
     }
 }

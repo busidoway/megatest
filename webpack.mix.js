@@ -17,5 +17,7 @@ mix.js([
         'node_modules/bootstrap/dist/js/bootstrap.js'
     ], 'public/js')
     .vue()
-    .sass('resources/sass/app.scss', 'public/css');
+    .sass('resources/sass/app.scss','public/css')
+    .sass('resources/sass/admin_app.scss', 'public/css');
+    // .css('resources/css/app.css', 'public/css');
     // .css('node_modules/bootstrap/dist/css/bootstrap.min.css', 'public/css');

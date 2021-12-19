@@ -21,6 +21,10 @@ const routes = [
         component: AdminTestBoxes
     },
     {
+        path: "/admin/tests/page/:page",
+        component: AdminTestBoxes
+    },
+    {
         path: "/admin/setting",
         component: AdminSetting
     },
@@ -29,7 +33,15 @@ const routes = [
         component: AdminTestBoxEdit
     },
     {
+        path: "/admin/test/:id",
+        component: AdminTestBoxEdit
+    },
+    {
         path: "/admin/tests/:id",
+        component: AdminTests
+    },
+    {
+        path: "/admin/tests/:id/page/:page",
         component: AdminTests
     },
     {

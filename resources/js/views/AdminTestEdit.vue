@@ -38,20 +38,21 @@
                         <form>
                             <input type="hidden" name="test_box_id" v-model="form.test_box_id" value="">
                             <div class="row mx-0">
-                                <input type="text" name="name" id="nameTest" v-model="form.name" :class="{ 'is-invalid':state.form.error }" class="form-control" placeholder="Заголовок" required>
+                                <textarea name="name" id="nameTest" v-model="form.name" :class="[{ 'is-invalid':state.form.error, 'form-control-disabled':state.form.disabled }]" class="form-control" placeholder="Заголовок" @input="changeName(form.name)" style="height:2rem" required></textarea>
                             </div>
                             <div class="d-flex justify-content-end mb-3">
-                                <button class="btn py-0 px-2 text-success" @click.prevent="store"><i class="fas fa-check"></i> Сохранить</button>
+                                <button class="btn py-0 px-2 " :class="[{ 'text-success':!state.btnName.disabled, 'text-gray-300':state.btnName.disabled }]" @click.prevent="store" :disabled="state.btnName.disabled"><i class="fas fa-check"></i> Сохранить</button>
                                 <!-- <button class="btn py-0 px-2 text-danger ms-1" ><i class="fas fa-times"></i></button> -->
                             </div>
                         </form>
                         <form>
                             <div class="row mx-0">
-                                <textarea name="note" id="noteTest" rows="10" v-model="formNote.note" class="form-control" placeholder="Описание"></textarea>
+                                <textarea name="note" id="noteTest" rows="10" v-model="formNote.note" class="form-control" :class="[{ 'form-control-disabled':state.formNote.disabled }]" @input="changeNote(formNote.note)" placeholder="Описание"></textarea>
                             </div>
                             <div class="d-flex justify-content-end mb-3">
-                                <button class="btn py-0 px-2 text-success" @click.prevent="updateNote"><i class="fas fa-check"></i> Сохранить</button>
-                                <button class="btn py-0 px-2 text-warning ms-1" ><i class="fas fa-times"></i> Очистить</button>
+                                <button class="btn py-0 px-2 " :class="[{ 'text-success':!state.btnNote.disabled, 'text-gray-300':state.btnNote.disabled }]" @click.prevent="updateNote" :disabled="state.btnNote.disabled">
+                                    <i class="fas fa-check"></i> Сохранить</button>
+                                <button class="btn py-0 px-2 text-warning ms-1" @click.prevent="clearNote"><i class="fas fa-times"></i> Очистить</button>
                             </div>
                             <!-- <div class="row p-0 mx-0">
                                 <div class="p-0">
@@ -66,27 +67,44 @@
             <div class="col-6 mb-4">
                 <div class="card border-0 shadow components-section">
                     <div class="card-body">
+                        <transition name="fade" :duration="{ enter: 500, leave: 300 }">
+                        <div class="row mx-0 text-white bg-danger px-3 py-2 rounded position-absolute end-0" style="transform: translateY(-100%); top:-15px;" v-if="state.iform.error">
+                            Ошибка
+                        </div>
+                        </transition>
+                        <transition name="fade" :duration="{ enter: 500, leave: 4000 }">
+                        <div class="row mx-0 text-white bg-success px-3 py-2 rounded position-absolute end-0" style="transform: translateY(-100%); top:-15px;" v-if="state.iform.success">
+                            Успешно сохранено
+                        </div>
+                        </transition>
                         <!-- <TestItems></TestItems> -->
-                        <div class="row mb-2 mx-0" v-if="form.name">
+                        <div class="row mb-2 mx-0 h5">
                             <b>Ответы</b>
                         </div>
-                        <div class="test-items py-2 mb-5" v-if="form.name">
+                        <div class="test-items py-2 mb-5">
                             <div class="row m-0" v-for="(item, index) in items" :key="item.label">
                                 <form>
-                                    <span class="me-3" :if="item.label"># {{ index + 1 }}:</span><input type="text" :name="'item' + item.label" v-model="item.value" :class="{ 'is-invalid':item.error }" :disabled="item.disabled" class="form-control">
-                                    <input type="hidden" name="status" v-model="iform.status" value="">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1 test-items__num" :if="item.label">{{ index + 1 }}:</span>
+                                        <input type="checkbox" :name="'checkitem'+item.label" :id="'checkitem'+item.label" v-model="item.status" class="form-check-input my-0 ms-2 me-3" @change="changeItem(index, item.value, item.status)" :checked="item.status">
+                                        <textarea :name="'item' + item.label" v-model="item.value" :class="{ 'is-invalid':item.error, 'form-control-disabled':item.disabled }" class="form-control" style="height:2rem" @input="changeItem(index, item.value)" v-on:keyup.enter.prevent="storeItem(item.label, item.id, item.value, item.status, $event)" @keydown.enter.prevent=""></textarea>
+                                        <!-- <input type="hidden" name="status" v-model="iform.status" value="n"> -->
+                                    </div>
                                     <div class="d-flex justify-content-end">
-                                        <button class="btn py-0 px-2 text-success" @click.prevent="storeItem(item.label, item.value)"><i class="fas fa-check"></i></button>
-                                        <button class="btn py-0 px-2 text-danger ms-1" @click.prevent="deleteItem(index)"><i class="fas fa-times"></i></button>
+                                        <button class="btn py-0 px-2" :class="[{ 'btn-text-gray': item.btnDisabled, 'text-success': !item.btnDisabled  }]" :disabled="item.btnDisabled" @click.prevent="storeItem(item.label, item.id, item.value, item.status)" title="Сохранить">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn py-0 px-2 text-danger ms-2" @click.prevent="deleteItem(index, item.id)" title="Удалить"><i class="fas fa-times"></i></button>
                                     </div>
                                 </form>
                             </div>
-                            <!-- <div class="py-2">
-                                <button class="btn btn-sm btn-btn btn-outline-gray-500 d-inline-flex align-items-center" v-if="btn.visible" @click.prevent="addItem">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="icon icon-xs me-2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                    Добавить пункт
-                                </button>
-                            </div> -->
+                            <div class="py-0 row m-0">
+                                <div>
+                                    <button class="btn px-0 m-0" :class="[{ 'btn-text-gray': state.btnAddItem.disabled, 'text-info': !state.btnAddItem.disabled  }]" :disabled="state.btnAddItem.disabled" @click.prevent="addItem">
+                                        <i class="fas fa-plus"></i> Добавить пункт
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -107,22 +125,13 @@
             form: {
                 test_box_id: "",
                 name: ""
-                // note: "NULL"
             },
             formNote: {
                 test_box_id: "",
                 note: ""
             },
             testEditVal: [],
-            items: [
-                { 
-                    label:1,
-                    value: '',
-                    disabled: false,
-                    error: false,
-                    success: false
-                }
-            ],
+            items: [],
             iform: {
                 test_id: "",
                 text: "",
@@ -131,27 +140,35 @@
             state: {
                 form: {
                     error: false,
-                    success: false
+                    success: false,
+                    disabled: false
+                },
+                formNote: {
+                    disabled: true
                 },
                 iform: {
                     error: false,
                     success: false
+                },
+                btnName: {
+                    disabled: false
+                },
+                btnNote: {
+                    disabled: false
+                },
+                btnAddItem: {
+                    disabled: false
                 }
             },
-            btnTitle: {
-                active: false
-            },
-            btn: {
-                visible: true
-            },
             settings: {
-                duration: 6000
+                duration: 4000
             }
         }),
         mounted() {
             this.editTest(this.$route.params.qid);
             this.editItems(this.$route.params.qid);
             this.form.test_box_id = this.$route.params.id;
+            this.visibleBtnAddItem(this.$route.params.qid);
         },
         methods: {
             store() {
@@ -175,7 +192,10 @@
                             this.state.form.success = true;
                             this.state.form.error = false;
                             this.$router.push('/admin/tests/'+ this.$route.params.id +'/q/'+ res.data.test.id);
-                            console.log('qid:',this.$route.params.qid);
+                            this.state.form.disabled = true;
+                            this.state.btnName.disabled = true;
+                            this.state.btnAddItem.disabled = false;
+                            // console.log('qid:',this.$route.params.qid);
                             setTimeout(() => { this.state.form.success = false; }, this.settings.duration);
                         } else {
                             this.state.form.error = true;
@@ -194,6 +214,8 @@
                             this.state.form.success = false;
                             this.state.form.success = true;
                             this.state.form.error = false;
+                            this.state.btnName.disabled = true;
+                            this.state.form.disabled = true;
                             setTimeout(() => { this.state.form.success = false; }, this.settings.duration);
                         } else {
                             this.state.form.error = true;
@@ -219,6 +241,8 @@
                             this.state.form.success = false;
                             this.state.form.success = true;
                             this.state.form.error = false;
+                            this.state.formNote.disabled = true;
+                            this.state.btnNote.disabled = true;
                             setTimeout(() => { this.state.form.success = false; }, this.settings.duration);
                         } else {
                             this.state.form.error = true;
@@ -234,35 +258,51 @@
                         this.testEditVal = res.data;
                         if(res.data.name) this.form.name = res.data.name;
                         if(res.data.note) this.formNote.note = res.data.note;
+                        this.state.form.disabled = true;
+                        this.state.btnName.disabled = true;
+                        this.state.btnNote.disabled = true;
                     }).catch(err => {
                         // this.not_found = true;
                         console.log(err);
                     })
                 }
             },
-            storeItem(itemid, val) {
+            storeItem(label, itemid, val, status, event) {
                 var id = this.$route.params.id,
                     qid = this.$route.params.qid,
-                    indexid = itemid - 1;
+                    indexid = label - 1;
                 
                 this.iform.test_id = qid;
                 this.iform.text = val;
-                this.iform.status = 'n';
+
+                if(status)
+                    this.iform.status = 'y';
+                else
+                    this.iform.status = 'n';
+
+                if(!itemid) itemid = 0;
 
                 if(val){
-                    axios.post('/api/tests/q/' + qid, this.iform, {
+                    axios.post('/api/tests/q/' + qid + '/item/' + itemid, this.iform, {
                         headers: {
                             "Content-type": "application/json"
                         }
                     })
                     .then(res => {
-                         console.log('data items:', this.items);
+                        // console.log('data items:', this.items);
                         if (res.data.status) {
                             this.state.iform.success = true;
                             this.state.iform.error = false;
+                            // console.log('this.items:',this.items[indexid]);
                             this.items[indexid].disabled = true;
-                            this.addItem();
-                            // this.btn.visible = true;
+                            this.items[indexid].btnDisabled = true;
+                            if(event) event.target.blur();
+                            if(status) 
+                                this.items[indexid].status = true;
+                            else
+                                this.items[indexid].status = false;
+                            
+                            setTimeout(() => { this.state.iform.success = false; }, this.settings.duration);
                         } else {
                             this.state.iform.error = true;
                             this.state.iform.success = false;
@@ -277,38 +317,92 @@
                     axios.get('/api/tests/q/edit/' + qid + '/items')
                     .then(res => {
                         if(res.data){
-                            console.log(res.data);
+                            // console.log(res.data);
                             for(let i in res.data){
+                                if( res.data[i].status == 'y')
+                                    var status = true;
+                                else
+                                    var status = false;
                                 this.items.push({
+                                    id: res.data[i].id,
                                     label: this.items.length + 1,
                                     value: res.data[i].text,
+                                    status: status,
                                     disabled: true,
                                     error: false,
-                                    success: true
+                                    success: true,
+                                    btnDisabled: true
                                 })
                             }
+                            // console.log(this.items);
                         }
                     }).catch(err => {
-                        // this.not_found = true;
-                        console.log(err);
+                        this.state.iform.error = true;
+                        this.state.iform.success = false;
                     })
                 }
             },
-            deleteItem(id) {
-                var itemid = id - 1
-                // itemid = itemid - 1;
-                this.items.splice(id, 1);
-                console.log(this.items);
-                // this.items.concat();
+            deleteItem(index, id) {
+                if(id) {
+                    axios.get('/api/test/items/del/'+id)
+                    .then(res => {
+                        if(res.status){
+                            this.items.splice(index, 1);
+                        }else{
+                            this.state.iform.error = true;
+                            this.state.iform.success = false;
+                        }
+                    })
+                    .catch(err => {
+                        this.error_del = true;
+                    })
+                }else{
+                    this.items.splice(index, 1);
+                }
             },
             addItem() {
-                console.log(this.items);
                 this.items.push({
+                    id: "",
                     label: this.items.length + 1,
                     value: '',
+                    status: '',
                     error: false,
-                    success: false
+                    disabled: false,
+                    success: false,
+                    btnDisabled: true
                 })
+            },
+            changeName(inp) {
+                if(inp) {
+                    this.state.form.disabled = false;
+                    this.state.btnName.disabled = false;
+                }
+            },
+            changeNote(inp) {
+                if(inp) {
+                    this.state.formNote.disabled = false;
+                    this.state.btnNote.disabled = false;
+                }
+            },
+            changeItem(index, inp, status) {
+                if(inp) {
+                    this.items[index].btnDisabled = false;
+                    this.items[index].disabled = false;
+                    if(status)
+                        this.items[index].status = status;
+                }
+                // console.log(this.items);
+            },
+            clearNote() {
+                this.formNote.note = "";
+                this.state.btnNote.disabled = false;
+            },
+            visibleBtnAddItem(qid){
+                console.log(qid);
+                if(qid)
+                    this.state.btnAddItem.disabled = false
+                else
+                    this.state.btnAddItem.disabled = true
             }
         }
     }
