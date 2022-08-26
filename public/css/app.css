@@ -11282,3 +11282,63 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.page-item.decided .page-link {
+  color: #fff;
+  background-color: #9ecef5;
+  border-color: #dee2e6;
+}
+
+.page-item.active .page-link {
+  color: #fff;
+  background-color: #3490dc;
+  border-color: #3490dc;
+}
+
+.page-link:focus {
+  box-shadow: none;
+}
+
+.test-items__list {
+  font-size: 16px;
+}
+
+.test-items__item .form-check-input {
+  width: 16px;
+  height: 16px;
+}
+.test-items__item .form-check-label {
+  width: -o-calc(100% - 32px);
+  width: calc(100% - 32px);
+}
+
+.test-result__users {
+  display: flex;
+}
+
+.test-result__student {
+  width: 100%;
+}
+
+.test-result__members_item {
+  white-space: nowrap;
+}
+
+.btn-print {
+  position: fixed;
+  left: 15px;
+  bottom: 20px;
+}
+
+.print {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .test-result__users {
+    display: block;
+  }
+
+  .test-result__members_item {
+    white-space: normal;
+  }
+}

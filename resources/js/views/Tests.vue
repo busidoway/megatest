@@ -2,38 +2,27 @@
     <div class="test-content">
         <div class="h2 mb-4 border-bottom">{{ testbox.name }}</div>
         <div v-if="show_result">
-            <div class="card mb-5" v-for="data in result_data" :key="data.name">
-                <div class="card-body" :class="{'text-success':data.status, 'text-danger':!data.status}">
-                    <h5 class="card-title">{{ data.name }}</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <span><i class="fas me-2" :class="{'fa-check text-success':data.status, 'fa-times text-danger':!data.status}"></i>{{ data.item }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="d-flex justify-content-center mt-3 mb-4">
-                <a class="btn btn-secondary px-3" href="/tests/">Назад</a>
-            </div>
+            <TestResult :resultRight="result_count.right" :resultTotal="result_count.total" :resultData="result_data" :testboxId="testbox.id" :student="student" :studentPos="student_pos" />
         </div>
         <div v-else>
             <div class="d-flex justify-content-between mt-3 mb-4">
                 <a class="btn btn-secondary px-3" href="/tests/">Назад</a>
-                <button class="btn btn-success text-white fs-5" @click.prevent="submitResult">Завершить</button>
+                <button class="btn btn-success text-white fs-5" @click.prevent="submitResult" v-if="test_finish">Завершить</button>
+                <button class="btn btn-success text-white fs-5" data-bs-toggle="modal" data-bs-target="#modal-warning" v-else>Завершить</button>
             </div>
             <nav>
                 <ul class="pagination">
-                    <li class="page-item" :class="{'active': active_id == t.id}" aria-current="page" v-for="(t, index) in arr_test" :key="t.id">
+                    <li class="page-item" :class="{'decided': t.disabled, 'active': active_id == t.id}" aria-current="page" v-for="(t, index) in arr_test" :key="t.id">
                         <a class="page-link" href="" @click.prevent="getTest(t.id)">{{ index + 1 }}</a>
                     </li>
                 </ul>
             </nav>
             <div class="card mb-5">
                 <div class="card-body">
-                    <h5 class="card-title">{{ test.name }}</h5>
+                    <div class="card-title h5 fw-bold">{{ test.name }}</div>
                     <p class="card-text">{{ test.note }}</p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="item in test.items" :key="item.id">
+                    <ul class="list-group list-group-flush test-items__list">
+                        <li class="list-group-item test-items__item" v-for="item in test.items" :key="item.id">
                             <input class="form-check-input" type="radio" :name="'test-item-'+test.id" :id="'test-item-'+item.id" @change="getResult(test.id, item.id)" :checked="item.checked" v-if="item.input === 'radio'">
                             <input class="form-check-input" type="checkbox" :name="'test-item-'+item.id" :id="'test-item-'+item.id" @change="getResult(test.id, item.id)" :checked="item.id === result[test.id]" v-if="item.input === 'checkbox'">
                             <label class="form-check-label ms-2" :for="'test-item-'+item.id">{{ item.text }}</label>
@@ -43,11 +32,22 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modal-warning" tabindex="-1" role="dialog" aria-labelledby="modal-warning" aria-hidden="true" v-if="!test_finish">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content text-center py-4 px-4">
+                    <div class="h5 modal-title mb-3">Необходимо ответить на все вопросы</div>
+                    <div class="modal-button">
+                        <button type="button" class="btn btn-primary text-white" data-bs-dismiss="modal">Понятно</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     import axios from 'axios';
+    import TestResult from "../components/TestResult";
     export default {
         data: () => ({
             loading: true,
@@ -64,29 +64,36 @@
             active_id: 0,
             result: [],
             result_data: [],
-            show_result: false
+            result_count: [{
+                total:0,
+                right:0,
+                wrong:0
+            }],
+            show_result: false,
+            test_finish: false,
+            student: "",
+            student_pos: ""
         }),
+        components: {
+            TestResult
+        },
         mounted() {
             this.loadTest(this.$route.params.id);
         },
         methods: {
             loadTest(id) {
-                // console.log(id);
                 axios.get('/api/test/' + id)
                 .then(res => {
-                    // console.log(res.data);
                     this.loading = false;
                     this.tests = res.data.tests;
                     this.testbox = res.data.testbox;
 
                     for(var i=0; i<res.data.tests.length; i++){
-                        // var data_items = [];
                         var data_items = res.data.test_items[i];
                         let new_data_items = [];
-                        // let qid = res.data.test_items[i].id;
-                        // console.log(res.data.test_items[i]);
                         var nn=0;
                         let inp;
+
                         for(let t in data_items){ 
                             if(data_items[t].status == 'y') nn++;
                         }
@@ -95,30 +102,22 @@
                                 else inp = 'radio';
 
                         for(let t in data_items){
-                            // let checked = false;
-                            // let check = this.result.find(el => el[qid] == data_items[t].id);
-                            // if(check) checked = true;
                             new_data_items.push({
                                 id: data_items[t].id,
                                 text: data_items[t].text,
-                                status: data_items[t].status,
                                 input: inp,
                                 checked: false
                             })
                         }
-                        
-                        // console.log(new_data_items);
 
                         this.arr_test.push({
                             id: res.data.tests[i].id,
                             name: res.data.tests[i].name,
                             note: res.data.tests[i].note,
-                            // items: res.data.test_items[i]
                             items: new_data_items,
+                            disabled: false,
                         });
                     }
-
-                    // console.log(this.arr_test);
 
                     for(var n=0; n<this.arr_test.length; n++){
                         if(n == 0) {
@@ -127,9 +126,7 @@
                         }
                     }
 
-                    // console.log('arr_test', this.arr_test);
                 }).catch(err => {
-                    // this.not_found = true;
                     console.log(err);
                 })
             },
@@ -140,11 +137,6 @@
             getResult(qid, item_id) {
                 var arr_result = [];
                 if(qid && item_id){
-                    // console.log(qid, item_id);
-
-                    // if(this.result.length) this.result.find(el => el.qid == qid);
-                    
-                    // console.log(this.arr_test);
 
                     this.arr_test.map(function(e){
                         if(e.id == qid){
@@ -156,12 +148,9 @@
                                         e.items[i].checked = false;
                                 }
                             }
+                            e.disabled = true;
                         }
                     });
-
-                    // console.log(this.arr_test);
-
-                    // if(this.arr_test[qid].items.id == item_id) this.arr_test[qid].items.checked = true;
 
                     if(this.result.length){
                         this.result.map(function(e){
@@ -173,40 +162,53 @@
                         });
                     }
 
-                    
+                    var arr_test_disabled = this.arr_test.some(el => el.disabled == false);
 
-                    // let new_result = this.result.find(el => el[qid]);
+                    if(!arr_test_disabled){
+                        this.test_finish = true;
+                    }else{
+                        this.test_finish = false;
+                    }
 
-                    // for(let i=0; i<this.result.length; i++){
-                    //     console.log(this.result[i][qid]);
-                    // }
-
-                    // let map_result = new Map();
-
-                    // this.result.set(qid, )
-
-                    // this.result = arr_result;
-                    // console.log(this.result)
                 }
             },
             submitResult() {
                 var id = this.$route.params.id;
-                var json_data = JSON.stringify({result: this.result});
-                axios.post('/api/test_box/' + id + '/result', json_data, {
-                    headers: {
-                        "Content-type": "application/json"
-                    }
-                })
-                .then(res => {
-                    if(res.data) {
-                        this.show_result = true;
-                        this.result_data = res.data;
-                        // console.log(res.data);
-                    }
-                }).catch(err => {
-                    // this.not_found = true;
-                    console.log(err);
-                })
+
+                var arr_test_disabled = this.arr_test.some(el => el.disabled == false);
+
+                if(!arr_test_disabled){
+                    var json_data = JSON.stringify({result: this.result});
+                    axios.post('/api/test_box/' + id + '/result', json_data, {
+                        headers: {
+                            "Content-type": "application/json"
+                        }
+                    })
+                    .then(res => {
+                        if(res.data) {
+
+                            var result_data = res.data.result_data;
+
+                            this.show_result = true;
+                            this.result_data = result_data;
+                            this.student = res.data.student.name;
+                            this.student_pos = res.data.student.position;
+
+                            var r = 0, w = 0;
+                            for(var i in result_data){
+                                if(result_data[i].status) r++;
+                                if(result_data[i].status == false) w++;
+                            }
+                            this.result_count.total = Object.keys(result_data).length;
+                            this.result_count.right = r;
+                            this.result_count.wrong = w;
+                            // console.log(res.data);
+                            console.log(result_data);
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                }
 
             }
         }

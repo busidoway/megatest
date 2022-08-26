@@ -10,6 +10,11 @@ import AdminTestBoxEdit from "./views/AdminTestBoxEdit";
 import AdminTests from "./views/AdminTests";
 import AdminTestEdit from "./views/AdminTestEdit";
 import Tests from "./views/Tests.vue";
+import AdminStudents from "./views/AdminStudents";
+import AdminStudentEdit from "./views/AdminStudentEdit";
+import AdminMembers from "./views/AdminMembers";
+import AdminMemberEdit from "./views/AdminMemberEdit";
+import PrintResult from "./views/PrintResult";
 
 const routes = [
     {
@@ -53,9 +58,46 @@ const routes = [
         component: AdminTestEdit
     },
     {
+        path: "/admin/students",
+        component: AdminStudents
+    },
+    {
+        path: "/admin/student",
+        component: AdminStudentEdit
+    },
+    {
+        path: "/admin/student/:id",
+        component: AdminStudentEdit
+    },
+    {
+        path: "/admin/students/page/:page",
+        component: AdminStudents
+    },
+    {
         path: "/test/:id",
         component: Tests
-    }
+    },
+    {
+        path: "/admin/members",
+        component: AdminMembers
+    },
+    {
+        path: "/admin/member",
+        component: AdminMemberEdit
+    },
+    {
+        path: "/admin/member/:id",
+        component: AdminMemberEdit
+    },
+    {
+        path: "/admin/members/page/:page",
+        component: AdminMembers
+    },
+    {
+        path: "/print/:data",
+        name: "print",
+        component: PrintResult
+    },
 ];
 
 export default new vueRouter({

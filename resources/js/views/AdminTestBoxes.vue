@@ -154,6 +154,7 @@
                     this.loading = false;
                     this.tests = res.data;
                     this.tests_data = res.data;
+                    this.curr_count = res.data.length;
                     this.total = res.data.length;
                     if(page){
                         this.loadListTests(page)

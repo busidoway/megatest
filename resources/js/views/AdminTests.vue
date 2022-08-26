@@ -179,7 +179,7 @@
                     this.tests = arr_test;
                     this.test_box_id = id;
                     this.tests_data = arr_test;
-
+                    this.curr_count = res.data.length;
                     this.total = res.data.length;
                     if(page){
                         this.loadListTests(page)

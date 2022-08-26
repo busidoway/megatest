@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div>
-                <router-link class="btn btn-gray-800 px-4" :to="{path: '/admin/tests/' + form.test_box_id}"><i class="fas fa-arrow-left me-2"></i> Назад</router-link>
+                <button class="btn btn-gray-800 px-4" @click="$router.go(-1)"><i class="fas fa-arrow-left me-2"></i> Назад</button>
             </div>
         </div>
         <div class="row">
@@ -82,16 +82,19 @@
                             <b>Ответы</b>
                         </div>
                         <div class="test-items py-2 mb-5">
-                            <div class="row m-0" v-for="(item, index) in items" :key="item.label">
+                            <div class="row m-0" v-for="(item, index) in items" :key="index">
                                 <form>
                                     <div class="d-flex align-items-center">
-                                        <span class="me-1 test-items__num" :if="item.label">{{ index + 1 }}:</span>
-                                        <input type="checkbox" :name="'checkitem'+item.label" :id="'checkitem'+item.label" v-model="item.status" class="form-check-input my-0 ms-2 me-3" @change="changeItem(index, item.value, item.status)" :checked="item.status">
-                                        <textarea :name="'item' + item.label" v-model="item.value" :class="{ 'is-invalid':item.error, 'form-control-disabled':item.disabled }" class="form-control" style="height:2rem" @input="changeItem(index, item.value)" v-on:keyup.enter.prevent="storeItem(item.label, item.id, item.value, item.status, $event)" @keydown.enter.prevent=""></textarea>
+                                        <span class="me-1 test-items__num">{{ index + 1 }}:</span>
+                                        <!-- <input type="checkbox" :name="'checkitem'+item.label" :id="'checkitem'+item.label" v-model="item.status" class="form-check-input my-0 ms-2 me-3" @change="changeItem(index, item.value, item.status)" :checked="item.status"> -->
+                                        <!-- <textarea :name="'item' + item.label" v-model="item.value" :class="{ 'is-invalid':item.error, 'form-control-disabled':item.disabled }" class="form-control" style="height:2rem" @input="changeItem(index, item.value)" v-on:keyup.enter.prevent="storeItem(item.label, item.id, item.value, item.status, $event)" @keydown.enter.prevent=""></textarea> -->
+                                        <input type="checkbox" :id="'checkitem'+index" v-model="item.status" class="form-check-input my-0 ms-2 me-3" @change="changeItem(index, item.value, item.status)" :checked="item.status">
+                                        <textarea :name="'item' + index" v-model="item.value" :class="{ 'is-invalid':item.error, 'form-control-disabled':item.disabled }" class="form-control" style="height:2rem" @input="changeItem(index, item.value)" v-on:keyup.enter.prevent="storeItem(index, item.id, item.value, item.status, $event)" @keydown.enter.prevent=""></textarea>
                                         <!-- <input type="hidden" name="status" v-model="iform.status" value="n"> -->
                                     </div>
                                     <div class="d-flex justify-content-end">
-                                        <button class="btn py-0 px-2" :class="[{ 'btn-text-gray': item.btnDisabled, 'text-success': !item.btnDisabled  }]" :disabled="item.btnDisabled" @click.prevent="storeItem(item.label, item.id, item.value, item.status)" title="Сохранить">
+                                        <!-- <button class="btn py-0 px-2" :class="[{ 'btn-text-gray': item.btnDisabled, 'text-success': !item.btnDisabled  }]" :disabled="item.btnDisabled" @click.prevent="storeItem(item.label, item.id, item.value, item.status)" title="Сохранить"> -->
+                                        <button class="btn py-0 px-2" :class="[{ 'btn-text-gray': item.btnDisabled, 'text-success': !item.btnDisabled  }]" :disabled="item.btnDisabled" @click.prevent="storeItem(index, item.id, item.value, item.status)" title="Сохранить">
                                             <i class="fas fa-check"></i>
                                         </button>
                                         <button class="btn py-0 px-2 text-danger ms-2" @click.prevent="deleteItem(index, item.id)" title="Удалить"><i class="fas fa-times"></i></button>
@@ -270,7 +273,8 @@
             storeItem(label, itemid, val, status, event) {
                 var id = this.$route.params.id,
                     qid = this.$route.params.qid,
-                    indexid = label - 1;
+                    // indexid = label - 1;
+                    indexid = label;
                 
                 this.iform.test_id = qid;
                 this.iform.text = val;
@@ -290,10 +294,12 @@
                     })
                     .then(res => {
                         // console.log('data items:', this.items);
+                        // console.log(res.data);
                         if (res.data.status) {
                             this.state.iform.success = true;
                             this.state.iform.error = false;
                             // console.log('this.items:',this.items[indexid]);
+                            this.items[indexid].id = res.data.testitem.id;
                             this.items[indexid].disabled = true;
                             this.items[indexid].btnDisabled = true;
                             if(event) event.target.blur();
@@ -301,6 +307,8 @@
                                 this.items[indexid].status = true;
                             else
                                 this.items[indexid].status = false;
+
+                            console.log(this.items);
                             
                             setTimeout(() => { this.state.iform.success = false; }, this.settings.duration);
                         } else {
@@ -325,7 +333,8 @@
                                     var status = false;
                                 this.items.push({
                                     id: res.data[i].id,
-                                    label: this.items.length + 1,
+                                    // label: this.items.length + 1,
+                                    // label: i,
                                     value: res.data[i].text,
                                     status: status,
                                     disabled: true,
@@ -343,11 +352,13 @@
                 }
             },
             deleteItem(index, id) {
+                console.log(id);
                 if(id) {
                     axios.get('/api/test/items/del/'+id)
                     .then(res => {
                         if(res.status){
                             this.items.splice(index, 1);
+                            console.log(this.items);
                         }else{
                             this.state.iform.error = true;
                             this.state.iform.success = false;
@@ -358,12 +369,14 @@
                     })
                 }else{
                     this.items.splice(index, 1);
+                    console.log(this.items);
                 }
             },
             addItem() {
                 this.items.push({
                     id: "",
-                    label: this.items.length + 1,
+                    // label: this.items.length + 1,
+                    // label: this.items.length,
                     value: '',
                     status: '',
                     error: false,
@@ -371,6 +384,7 @@
                     success: false,
                     btnDisabled: true
                 })
+                console.log(this.items);
             },
             changeName(inp) {
                 if(inp) {

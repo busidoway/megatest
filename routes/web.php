@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestBoxesController;
+use App\Http\Controllers\StudentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +19,13 @@ use App\Http\Controllers\TestBoxesController;
 //     return view('test');
 // })->where('any', '.*');
 
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+// Route::get('/', function () {
+//     return view('index');
+// })->name('home');
+
+Route::get('/', [StudentsController::class, 'getStudents'])->name('home');
+
+Route::post('/student/select', [StudentsController::class, 'selectStudent'])->name('select_student');
 
 Route::get('/tests', [TestBoxesController::class, 'getDataTests'])->name('tests');
 
@@ -30,18 +35,25 @@ Route::get('/test/{id}', function () {
     return view('test');
 })->name('data-test');
 
-Auth::routes();
+Auth::routes(['register'=>false]);
 
 Route::get('/admin', function () {
     return view('admin.admin');
-});
+})->middleware('auth');
 
 // Route::get('admin/tests/{id}', 'TestsController@index');
 
+Route::get('/account', function () {
+    return view('auth.account');
+})->name('account');
+
+Route::post('/test/rand', [TestBoxesController::class, 'getRandTestBox'])->name('test_box_rand');
+
+// Route::post('/test/{id}/result', [TestBoxesController::class, 'getResult'])->name('get_result');
 
 Route::get('/admin/{any}', function () {
     return view('admin.admin');
-})->where('any', '.*');
+})->where('any', '.*')->middleware('auth');
 
 // Route::get('/admin/tests/{id}', [App\Http\Controllers\TestsController::class, 'index']);
 

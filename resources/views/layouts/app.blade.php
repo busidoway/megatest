@@ -7,6 +7,8 @@
     <title>@yield('meta-title')</title>
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/print.css">
 </head>
 <body>
     @include('includes.header')
@@ -14,5 +16,9 @@
         @yield('content')
     </div>
     <script src="/js/app.js" defer></script>
+    <!-- <script src="/vendor/@popperjs/core/dist/umd/popper.min.js"></script> -->
+    <script src="/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- <script async defer src="https://buttons.github.io/buttons.js"></script> -->
+    <script src="/vendor/notyf/notyf.min.js"></script>
 </body>
 </html>

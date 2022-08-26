@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestBoxesController;
 use App\Http\Controllers\TestsController;
 use App\Http\Controllers\TestItemsController;
+use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\MembersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,3 +58,29 @@ Route::post('test_box/del/{id}', [TestBoxesController::class, 'destroy']);
 Route::post('test_box/{id}/result', [TestBoxesController::class, 'getResult']);
 
 Route::get('test/q/{qid}', [TestItemsController::class, 'index']);
+
+Route::get('students', [StudentsController::class, 'index']);
+
+Route::post('student/store', [StudentsController::class, 'store']);
+
+Route::get('student/edit/{id}', [StudentsController::class, 'edit']);
+
+Route::post('student/update/{id}', [StudentsController::class, 'update']);
+
+Route::get('student/show/{id}', [StudentsController::class, 'show']);
+
+Route::post('student/del/{id}', [StudentsController::class, 'destroy']);
+
+Route::post('student/cheat/{id}', [StudentsController::class, 'toggleCheat']);
+
+Route::get('members', [MembersController::class, 'index']);
+
+Route::post('member/store', [MembersController::class, 'store']);
+
+Route::get('member/edit/{id}', [MembersController::class, 'edit']);
+
+Route::post('member/update/{id}', [MembersController::class, 'update']);
+
+Route::get('member/show/{id}', [MembersController::class, 'show']);
+
+Route::post('member/del/{id}', [MembersController::class, 'destroy']);

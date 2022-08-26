@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TestBox;
 use App\Models\Test;
 use App\Models\TestItem;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -16,6 +17,21 @@ class TestBoxesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    protected $student_curr;
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+
+            if ($request->session()->has('student')) {
+                $this->student_curr = $request->session()->get('student');
+            }
+
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         return TestBox::all();
@@ -23,7 +39,10 @@ class TestBoxesController extends Controller
 
     public function getDataTests()
     {
-        return view('tests', ['tests' => TestBox::all()]);
+
+        $testboxes = TestBox::paginate(18);
+
+        return view('tests', ['tests' => $testboxes]);
     }
 
     public function getTest($id)
@@ -33,9 +52,6 @@ class TestBoxesController extends Controller
 
         $tests = $testbox->tests()->get();
 
-        // $test_items = $tests->test_items()->get();
-        // $test_items = '';
-
         $arr_test = array();
 
         foreach($tests as $k=>$t){
@@ -43,24 +59,15 @@ class TestBoxesController extends Controller
             $test_items = $test->test_items()->get();
             
             if(sizeof($test_items) > 0){
-                // for($i=0; $i<count($test_items); $i++){
-                //     $n=1;
-                //     if($test_items[$i]['status'] == 'y') $n++;
-                //     if($n>1) $arr_test[$k]['input'] = 'checkbox';
-                // }
-                $arr_test[$k] = $test_items;
+                // $arr_test[$k] = $test_items;
+                foreach($test_items as $ki=>$vi){
+                    unset($vi['status']);
+                    $arr_test[$k][$ki] = $vi;
+                }
             }
-            // $arr_test[$k] = ["items" => $test_items];
         }
 
-        // return view('test', ['tests' => $tests, 'test_items' => $test_items]);
-        // return [
-        //     "status" => true,
-        //     "tests" => $tests
-        // ];
-
         return ['testbox' => $testbox, 'tests' => $tests, 'test_items' => $arr_test];
-        // return $arr_test;
     }
 
     public function getResult(Request $request, $id) {
@@ -71,32 +78,59 @@ class TestBoxesController extends Controller
 
             $arr = array();
 
-            foreach($request->result as $key=>$val){
-                foreach($val as $k=>$v){
-                    $test = Test::find($k);
-                    $test_item = TestItem::find($v);
-                    if($test_item->status == 'y'){
-                        $arr[$k]['name'] = $test->name;
-                        $arr[$k]['item'] = $test_item->text;
-                        $arr[$k]['status'] = true;
-                    }else{
-                        $arr[$k]['name'] = $test->name;
-                        $arr[$k]['item'] = $test_item->text;
-                        $arr[$k]['status'] = false;
-                    }
-                }
+            $student = "null";
+
+            if ($request->session()->has('student')) {
+                $student_session = $request->session()->get('student');
+                $student = Student::find($student_session);
             }
 
-            // for($i=0; $i<count($request); $i++){
-            //     $test = Test::find($request[$i]);
-            // }
+            if($student->cheat == 'y'){
 
-            return $arr;
+                $tests = Test::where('test_box_id', $id)->get();
+
+                foreach($tests as $t){
+                    $key = $t->id;
+                    $test_item = TestItem::where('test_id', $t->id)->where('status', 'y')->first();
+                    $arr[$key]['name'] = $t->name;
+                    $arr[$key]['item'] = $test_item->text;
+                    $arr[$key]['status'] = true;
+                }
+
+            }else{
+
+                foreach($request->result as $key=>$val){
+                    foreach($val as $k=>$v){
+                        $test = Test::find($k);
+                        $test_item = TestItem::find($v);
+                        if($test_item->status == 'y'){
+                            $arr[$k]['name'] = $test->name;
+                            $arr[$k]['item'] = $test_item->text;
+                            $arr[$k]['status'] = true;
+                        }else{
+                            $arr[$k]['name'] = $test->name;
+                            $arr[$k]['item'] = $test_item->text;
+                            $arr[$k]['status'] = false;
+                        }
+                    }
+                }   
+                
+            }
+
+            return ['result_data' => $arr, 'student' => $student];
 
         }
 
         // return $request;
 
+    }
+
+    public function getRandTestBox(Request $request) {
+        $testboxes = TestBox::all();
+
+        $tbox = $testboxes->random();
+
+        return redirect()->route('data-test', ['id' => $tbox]);
     }
 
     /**

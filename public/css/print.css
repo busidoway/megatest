@@ -1,0 +1,65 @@
+@media print {
+  .noprint {
+    display: none !important;
+  }
+
+  .print {
+    display: block !important;
+  }
+
+  html, body {
+    height: 297mm;
+    width: 210mm;
+    font-size: 14px !important;
+  }
+
+  header {
+    display: none !important;
+  }
+
+  .container {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  ul, ol, table {
+    page-break-inside: avoid;
+  }
+
+  article {
+    page-break-inside: always;
+  }
+
+  .test-content {
+    padding: 30px 0;
+  }
+
+  .test-result__date {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .test-result__result {
+    display: inline-block;
+    text-align: left;
+    padding: 0px 0 !important;
+    width: 100%;
+    margin-top: 0 !important;
+  }
+
+  .test-result .card-body {
+    padding: 5px;
+    font-size: 14px;
+  }
+  .test-result .card-title {
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  .test-result .list-group-flush > .list-group-item {
+    padding: 0 1rem;
+  }
+}
+@page {
+  margin: 10mm 10mm 10mm 20mm;
+}
